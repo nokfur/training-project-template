@@ -1,8 +1,362 @@
-<html>
-	<head>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        />
+        <title>Document</title>
+        <link rel="stylesheet" href="/dist/css/home-page.css" />
 
-	</head>
-	<body>
-		
-	</body>
+        <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+    </head>
+    <body>
+        <div>
+            <nav
+                class="navbar navbar-expand-lg navbar-light bg-light p-0"
+            >
+                <span></span>
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div
+                    class="collapse navbar-collapse"
+                    id="navbarSupportedContent"
+                >
+                    <ul class="navbar-nav bg-light py-1">
+                        <li class="nav-item ">
+                            <button
+                                type="button"
+                                class="btn px-3 d-flex align-items-center"
+                                aria-label="menu"
+                            >
+                                <iconify-icon
+                                    icon="bitcoin-icons:plus-filled"
+                                    class="icon-lg text-pink"
+                                ></iconify-icon>
+
+                                <span class="mx-1">New</span>
+
+                                <iconify-icon
+                                    icon="oui:arrow-down"
+                                    class="icon-md"
+                                ></iconify-icon>
+                            </button>
+                        </li>
+
+                        <li class="nav-item ">
+                            <button
+                                type="button"
+                                class="btn px-3 d-flex align-items-center"
+                                aria-label="menu"
+                            >
+                                <iconify-icon
+                                    icon="fluent-mdl2:upload"
+                                    class="icon-lg text-pink"
+                                ></iconify-icon>
+
+                                <span class="mx-1">Upload</span>
+
+                                <iconify-icon
+                                    icon="oui:arrow-down"
+                                    class="icon-md"
+                                ></iconify-icon>
+                            </button>
+                        </li>
+
+                        <li class="nav-item ">
+                            <button
+                                type="button"
+                                class="btn px-3 d-flex align-items-center"
+                                aria-label="menu"
+                            >
+                                <iconify-icon
+                                    icon="fluent-mdl2:sync-to-p-c"
+                                    class="icon-lg text-pink"
+                                ></iconify-icon>
+
+                                <span class="ml-2">Sync</span>
+                            </button>
+                        </li>
+
+                        <li class="nav-item">
+                            <button
+                                type="button"
+                                class="btn px-3 d-flex align-items-center"
+                                aria-label="menu"
+                            >
+                                <iconify-icon
+                                    icon="vscode-icons:file-type-excel2"
+                                    class="icon-lg "
+                                ></iconify-icon>
+
+                                <span class="ml-1"
+                                    >Export to Excel</span
+                                >
+                            </button>
+                        </li>
+
+                        <li class="nav-item ">
+                            <button
+                                type="button"
+                                class="btn px-3 d-flex align-items-center"
+                                aria-label="menu"
+                            >
+                                <iconify-icon
+                                    icon="fluent:flow-20-regular"
+                                    class="icon-lg text-pink"
+                                ></iconify-icon>
+
+                                <span class="mx-1">Flow</span>
+
+                                <iconify-icon
+                                    icon="oui:arrow-down"
+                                    class="icon-md"
+                                ></iconify-icon>
+                            </button>
+                        </li>
+
+                        <li class="nav-item ">
+                            <button
+                                type="button"
+                                class="btn px-3 d-flex align-items-center"
+                                aria-label="menu"
+                            >
+                                <iconify-icon
+                                    icon="mynaui:dots-solid"
+                                    class="icon-lg "
+                                ></iconify-icon>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="pl-5">
+                <h2 class="font-weight-light py-4">Documents</h2>
+
+                <table class="table w-100 table-hover">
+                    <thead>
+                        <tr>
+                            <th
+                                class="font-weight-normal border-top-0 "
+                            >
+                                <div
+                                    class="d-flex align-items-center"
+                                >
+                                    <iconify-icon
+                                        icon="fluent:document-20-regular"
+                                        class="icon-lg mr-3"
+                                    ></iconify-icon>
+
+                                    <span>Name</span>
+
+                                    <iconify-icon
+                                        icon="oui:arrow-down"
+                                        class="icon-md ml-1"
+                                    ></iconify-icon>
+                                </div>
+                            </th>
+                            <th
+                                class="font-weight-normal border-top-0"
+                            >
+                                <div
+                                    class="d-flex align-items-center"
+                                >
+                                    <span>Modified</span>
+
+                                    <iconify-icon
+                                        icon="oui:arrow-down"
+                                        class="icon-md ml-1"
+                                    ></iconify-icon>
+                                </div>
+                            </th>
+                            <th
+                                class="font-weight-normal border-top-0"
+                            >
+                                <div
+                                    class="d-flex align-items-center"
+                                >
+                                    <span>Modified By</span>
+
+                                    <iconify-icon
+                                        icon="oui:arrow-down"
+                                        class="icon-md ml-1"
+                                    ></iconify-icon>
+                                </div>
+                            </th>
+
+                            <th
+                                class="font-weight-normal border-top-0"
+                            >
+                                <div
+                                    class="d-flex align-items-center"
+                                >
+                                    <iconify-icon
+                                        icon="bitcoin-icons:plus-filled"
+                                        class="icon-md mr-1"
+                                    ></iconify-icon>
+
+                                    <span>Add column</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr class="">
+                            <td>
+                                <div
+                                    class="d-flex align-items-center"
+                                >
+                                    <iconify-icon
+                                        icon="glyphs:folder-duo"
+                                        class="icon-lg mr-3"
+                                    ></iconify-icon>
+
+                                    <span>CAS</span>
+                                </div>
+                            </td>
+                            <td class="text-gray">April 30</td>
+                            <td class="text-gray">Megan Bowen</td>
+                            <td></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div
+                                    class="d-flex align-items-center"
+                                >
+                                    <iconify-icon
+                                        icon="vscode-icons:file-type-excel"
+                                        class="icon-lg mr-3"
+                                    ></iconify-icon>
+
+                                    <span class="position-relative">
+                                        <span class="glimmer">
+                                            <iconify-icon
+                                                icon="tabler:loader-quarter"
+                                                class="icon-lg text-pink"
+                                            ></iconify-icon>
+                                        </span>
+
+                                        CoasterAndBargeLoading.xlsx
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="text-gray">
+                                A few seconds ago
+                            </td>
+                            <td class="text-gray">
+                                Administrator MOD
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr class="">
+                            <td>
+                                <div
+                                    class="d-flex align-items-center"
+                                >
+                                    <iconify-icon
+                                        icon="vscode-icons:file-type-excel"
+                                        class="icon-lg mr-3"
+                                    ></iconify-icon>
+
+                                    <span class="position-relative">
+                                        <span class="glimmer">
+                                            <iconify-icon
+                                                icon="tabler:loader-quarter"
+                                                class="icon-lg text-pink"
+                                            ></iconify-icon>
+                                        </span>
+
+                                        RevenueByServices.xlsx
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="text-gray">
+                                A few seconds ago
+                            </td>
+                            <td class="text-gray">
+                                Administrator MOD
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr class="">
+                            <td>
+                                <div
+                                    class="d-flex align-items-center"
+                                >
+                                    <iconify-icon
+                                        icon="vscode-icons:file-type-excel"
+                                        class="icon-lg mr-3"
+                                    ></iconify-icon>
+
+                                    <span class="position-relative">
+                                        <span class="glimmer">
+                                            <iconify-icon
+                                                icon="tabler:loader-quarter"
+                                                class="icon-lg text-pink"
+                                            ></iconify-icon>
+                                        </span>
+
+                                        RevenueByServices2016.xlsx
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="text-gray">
+                                A few seconds ago
+                            </td>
+                            <td class="text-gray">
+                                Administrator MOD
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr class="">
+                            <td>
+                                <div
+                                    class="d-flex align-items-center"
+                                >
+                                    <iconify-icon
+                                        icon="vscode-icons:file-type-excel"
+                                        class="icon-lg mr-3"
+                                    ></iconify-icon>
+
+                                    <span class="position-relative">
+                                        <span class="glimmer">
+                                            <iconify-icon
+                                                icon="tabler:loader-quarter"
+                                                class="icon-lg text-pink"
+                                            ></iconify-icon>
+                                        </span>
+
+                                        RevenueByServices2017.xlsx
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="text-gray">
+                                A few seconds ago
+                            </td>
+                            <td class="text-gray">
+                                Administrator MOD
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script src="/dist/js/home-page.js"></script>
+    </body>
 </html>

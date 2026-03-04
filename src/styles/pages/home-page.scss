@@ -1,2 +1,36 @@
 // Home page styles
-@import "master-page";
+@import 'master-page';
+
+.text-pink {
+    color: #eb3687;
+}
+
+.text-gray {
+    color: #686868;
+}
+
+.icon-lg {
+    font-size: 24px;
+}
+
+.icon-md {
+    font-size: 15px;
+}
+
+.glimmer {
+    position: absolute;
+    top: -7px;
+    left: -9px;
+}
+
+/* Ensure the table has a visible bottom border on the last row */
+.table {
+    tbody tr:last-child td {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    th:first-child,
+    td:first-child {
+        padding-left: 50px;
+    }
+}
