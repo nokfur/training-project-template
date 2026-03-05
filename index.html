@@ -215,8 +215,54 @@
                         </tr>
                     </thead>
 
-                    <tbody>
-                        <tr class="border-bottom">
+                    <tbody class="table-body">
+                        <!-- Render data through JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script src="/dist/js/home-page.js"></script>
+        <script>
+            const fileData = [
+                {
+                    name: 'CAS',
+                    modified: 'April 30',
+                    modifiedBy: 'Megan Bowen',
+                    fileType: 'folder',
+                },
+                {
+                    name: 'CoasterAndBargeLoading.xlsx',
+                    modified: 'A few seconds ago',
+                    modifiedBy: 'Administrator MOD',
+                    fileType: 'excel',
+                },
+                {
+                    name: 'RevenueByServices.xlsx',
+                    modified: 'A few seconds ago',
+                    modifiedBy: 'Administrator MOD',
+                    fileType: 'excel',
+                },
+                {
+                    name: 'RevenueByServices2016.xlsx',
+                    modified: 'A few seconds ago',
+                    modifiedBy: 'Administrator MOD',
+                    fileType: 'excel',
+                },
+                {
+                    name: 'RevenueByServices2017.xlsx',
+                    modified: 'A few seconds ago',
+                    modifiedBy: 'Administrator MOD',
+                    fileType: 'excel',
+                },
+            ];
+
+            const tableBody = document.querySelector('.table-body');
+
+            const html = fileData
+                .map(data => {
+                    if (data.fileType === 'folder') {
+                        return `<tr class="border-bottom">
                             <td
                                 class="text-right"
                                 data-label="File Type"
@@ -226,17 +272,17 @@
                                     class="icon-lg"
                                 ></iconify-icon>
                             </td>
-                            <td data-label="Name">CAS</td>
+                            <td data-label="Name">${data.name}</td>
                             <td data-label="Modified">
-                                April 30
+                                ${data.modified}
                             </td>
                             <td data-label="Modified By">
-                                Megan Bowen
+                                ${data.modifiedBy}
                             </td>
                             <td></td>
-                        </tr>
-
-                        <tr class="border-bottom">
+                        </tr>`;
+                    } else {
+                        return `<tr class="border-bottom">
                             <td
                                 class="text-right"
                                 data-label="File Type"
@@ -255,115 +301,22 @@
                                         ></iconify-icon>
                                     </span>
 
-                                    CoasterAndBargeLoading.xlsx
+                                    ${data.name}
                                 </div>
                             </td>
                             <td data-label="Modified">
-                                A few seconds ago
+                                ${data.modified}
                             </td>
                             <td data-label="Modified By">
-                                Administrator MOD
+                                ${data.modifiedBy}
                             </td>
                             <td></td>
-                        </tr>
+                        </tr>`;
+                    }
+                })
+                .join('');
 
-                        <tr class="border-bottom">
-                            <td
-                                class="text-right"
-                                data-label="File Type"
-                            >
-                                <iconify-icon
-                                    icon="vscode-icons:file-type-excel"
-                                    class="icon-lg"
-                                ></iconify-icon>
-                            </td>
-                            <td data-label="Name">
-                                <div class="position-relative">
-                                    <span class="glimmer">
-                                        <iconify-icon
-                                            icon="tabler:loader-quarter"
-                                            class="icon-lg text-pink"
-                                        ></iconify-icon>
-                                    </span>
-
-                                    RevenueByServices.xlsx
-                                </div>
-                            </td>
-                            <td data-label="Modified">
-                                A few seconds ago
-                            </td>
-                            <td data-label="Modified By">
-                                Administrator MOD
-                            </td>
-                            <td></td>
-                        </tr>
-
-                        <tr class="border-bottom">
-                            <td
-                                class="text-right"
-                                data-label="File Type"
-                            >
-                                <iconify-icon
-                                    icon="vscode-icons:file-type-excel"
-                                    class="icon-lg"
-                                ></iconify-icon>
-                            </td>
-                            <td data-label="Name">
-                                <div class="position-relative">
-                                    <span class="glimmer">
-                                        <iconify-icon
-                                            icon="tabler:loader-quarter"
-                                            class="icon-lg text-pink"
-                                        ></iconify-icon>
-                                    </span>
-
-                                    RevenueByServices2016.xlsx
-                                </div>
-                            </td>
-                            <td data-label="Modified">
-                                A few seconds ago
-                            </td>
-                            <td data-label="Modified By">
-                                Administrator MOD
-                            </td>
-                            <td></td>
-                        </tr>
-
-                        <tr class="border-bottom">
-                            <td
-                                class="text-right"
-                                data-label="File Type"
-                            >
-                                <iconify-icon
-                                    icon="vscode-icons:file-type-excel"
-                                    class="icon-lg"
-                                ></iconify-icon>
-                            </td>
-                            <td data-label="Name">
-                                <div class="position-relative">
-                                    <span class="glimmer">
-                                        <iconify-icon
-                                            icon="tabler:loader-quarter"
-                                            class="icon-lg text-pink"
-                                        ></iconify-icon>
-                                    </span>
-
-                                    RevenueByServices2017.xlsx
-                                </div>
-                            </td>
-                            <td data-label="Modified">
-                                A few seconds ago
-                            </td>
-                            <td data-label="Modified By">
-                                Administrator MOD
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <script src="/dist/js/home-page.js"></script>
+            tableBody.innerHTML = html;
+        </script>
     </body>
 </html>
