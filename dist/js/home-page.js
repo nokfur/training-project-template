@@ -18070,7 +18070,89 @@ module.exports = g;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-const renderGrid = () => {// TODO: implement code to Render grid
+const renderGrid = () => {
+  const fileData = [{
+    name: 'CAS',
+    modified: 'April 30',
+    modifiedBy: 'Megan Bowen',
+    fileType: 'folder'
+  }, {
+    name: 'CoasterAndBargeLoading.xlsx',
+    modified: 'A few seconds ago',
+    modifiedBy: 'Administrator MOD',
+    fileType: 'excel'
+  }, {
+    name: 'RevenueByServices.xlsx',
+    modified: 'A few seconds ago',
+    modifiedBy: 'Administrator MOD',
+    fileType: 'excel'
+  }, {
+    name: 'RevenueByServices2016.xlsx',
+    modified: 'A few seconds ago',
+    modifiedBy: 'Administrator MOD',
+    fileType: 'excel'
+  }, {
+    name: 'RevenueByServices2017.xlsx',
+    modified: 'A few seconds ago',
+    modifiedBy: 'Administrator MOD',
+    fileType: 'excel'
+  }];
+  const tableBody = document.querySelector('.table-body');
+  const html = fileData.map(data => {
+    if (data.fileType === 'folder') {
+      return `<tr class="border-bottom">
+                            <td
+                                class="text-right"
+                                data-label="File Type"
+                            >
+                                <iconify-icon
+                                    icon="glyphs:folder-duo"
+                                    class="icon-lg"
+                                ></iconify-icon>
+                            </td>
+                            <td data-label="Name">${data.name}</td>
+                            <td data-label="Modified">
+                                ${data.modified}
+                            </td>
+                            <td data-label="Modified By">
+                                ${data.modifiedBy}
+                            </td>
+                            <td></td>
+                        </tr>`;
+    }
+
+    return `<tr class="border-bottom">
+                            <td
+                                class="text-right"
+                                data-label="File Type"
+                            >
+                                <iconify-icon
+                                    icon="vscode-icons:file-type-excel"
+                                    class="icon-lg"
+                                ></iconify-icon>
+                            </td>
+                            <td data-label="Name">
+                                <div class="position-relative">
+                                    <span class="glimmer">
+                                        <iconify-icon
+                                            icon="tabler:loader-quarter"
+                                            class="icon-lg text-pink"
+                                        ></iconify-icon>
+                                    </span>
+
+                                    ${data.name}
+                                </div>
+                            </td>
+                            <td data-label="Modified">
+                                ${data.modified}
+                            </td>
+                            <td data-label="Modified By">
+                                ${data.modifiedBy}
+                            </td>
+                            <td></td>
+                        </tr>`;
+  }).join('');
+  if (tableBody) tableBody.innerHTML = html;
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (renderGrid);
