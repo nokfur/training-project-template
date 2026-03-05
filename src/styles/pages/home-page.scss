@@ -2,35 +2,74 @@
 @import 'master-page';
 
 .text-pink {
-    color: #eb3687;
+    color: $pink;
 }
 
 .text-gray {
-    color: #686868;
+    color: $gray;
+}
+
+.border-2 {
+    border-width: $size-xs !important;
 }
 
 .icon-lg {
-    font-size: 24px;
+    font-size: $size-xl;
 }
 
 .icon-md {
-    font-size: 15px;
+    font-size: $size-lg;
+}
+
+.nav-item button {
+    &:hover {
+        background-color: $light-gray;
+    }
 }
 
 .glimmer {
     position: absolute;
-    top: -7px;
-    left: -9px;
+    top: -$size-md;
+    left: -$size-md;
 }
 
-/* Ensure the table has a visible bottom border on the last row */
-.table {
-    tbody tr:last-child td {
-        border-bottom: 1px solid #dee2e6;
-    }
+@media (max-width: $break-point-lg) {
+    .table {
+        thead {
+            display: none;
+        }
 
-    th:first-child,
-    td:first-child {
-        padding-left: 50px;
+        tr {
+            display: block;
+            border-radius: $size-md;
+            background-color: $light-gray;
+            margin-bottom: $size-xxl;
+        }
+
+        td {
+            display: flex;
+            flex-wrap: wrap;
+            margin: $size-sm;
+            background-color: $white;
+            align-items: center;
+
+            &:first-child {
+                background-color: $light-gray;
+                justify-content: space-between;
+            }
+
+            &:last-child {
+                display: none;
+            }
+
+            &::before {
+                content: attr(data-label);
+                font-weight: $bold;
+                font-style: italic;
+                display: inline-block;
+                width: 20%;
+                text-align: left !important;
+            }
+        }
     }
 }
