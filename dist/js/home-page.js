@@ -18075,64 +18075,50 @@ const renderGrid = () => {
     name: 'CAS',
     modified: 'April 30',
     modifiedBy: 'Megan Bowen',
-    fileType: 'folder'
+    fileType: 'folder',
+    isGlimmer: false
   }, {
     name: 'CoasterAndBargeLoading.xlsx',
     modified: 'A few seconds ago',
     modifiedBy: 'Administrator MOD',
-    fileType: 'excel'
+    fileType: 'excel',
+    isGlimmer: true
   }, {
     name: 'RevenueByServices.xlsx',
     modified: 'A few seconds ago',
     modifiedBy: 'Administrator MOD',
-    fileType: 'excel'
+    fileType: 'excel',
+    isGlimmer: true
   }, {
     name: 'RevenueByServices2016.xlsx',
     modified: 'A few seconds ago',
     modifiedBy: 'Administrator MOD',
-    fileType: 'excel'
+    fileType: 'excel',
+    isGlimmer: true
   }, {
     name: 'RevenueByServices2017.xlsx',
     modified: 'A few seconds ago',
     modifiedBy: 'Administrator MOD',
-    fileType: 'excel'
+    fileType: 'excel',
+    isGlimmer: true
   }];
+  const fileTypeIconMap = {
+    folder: 'glyphs:folder-duo',
+    excel: 'vscode-icons:file-type-excel'
+  };
   const tableBody = document.querySelector('.table-body');
-  const html = fileData.map(data => {
-    if (data.fileType === 'folder') {
-      return `<tr class="border-bottom">
+  const html = fileData.map(data => `<tr class="border-bottom">
                             <td
                                 class="text-right"
                                 data-label="File Type"
                             >
                                 <iconify-icon
-                                    icon="glyphs:folder-duo"
-                                    class="icon-lg"
-                                ></iconify-icon>
-                            </td>
-                            <td data-label="Name">${data.name}</td>
-                            <td data-label="Modified">
-                                ${data.modified}
-                            </td>
-                            <td data-label="Modified By">
-                                ${data.modifiedBy}
-                            </td>
-                            <td></td>
-                        </tr>`;
-    }
-
-    return `<tr class="border-bottom">
-                            <td
-                                class="text-right"
-                                data-label="File Type"
-                            >
-                                <iconify-icon
-                                    icon="vscode-icons:file-type-excel"
-                                    class="icon-lg"
+                                    icon=${fileTypeIconMap[data.fileType]}
+                                    class="icon-lg text-right align-self-end"
                                 ></iconify-icon>
                             </td>
                             <td data-label="Name">
-                                <div class="position-relative">
+                                ${data.isGlimmer ? `<div class="position-relative">
                                     <span class="glimmer">
                                         <iconify-icon
                                             icon="tabler:loader-quarter"
@@ -18141,7 +18127,8 @@ const renderGrid = () => {
                                     </span>
 
                                     ${data.name}
-                                </div>
+                                </div>` : data.name}
+
                             </td>
                             <td data-label="Modified">
                                 ${data.modified}
@@ -18150,8 +18137,7 @@ const renderGrid = () => {
                                 ${data.modifiedBy}
                             </td>
                             <td></td>
-                        </tr>`;
-  }).join('');
+                        </tr>`).join('');
   if (tableBody) tableBody.innerHTML = html;
 };
 

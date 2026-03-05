@@ -48,7 +48,6 @@
 
         td {
             display: flex;
-            flex-wrap: wrap;
             margin: $size-sm;
             background-color: $white;
             align-items: center;
@@ -68,7 +67,9 @@
                 font-style: italic;
                 display: inline-block;
                 width: 20%;
+                min-width: fit-content;
                 text-align: left !important;
+                margin-right: $size-xl;
             }
         }
     }
