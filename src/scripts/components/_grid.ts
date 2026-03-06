@@ -1,10 +1,12 @@
 const renderGrid = () => {
     // TODO: implement code to Render grid
+    type FileType = 'folder' | 'excel';
+
     type FileData = {
         name: string;
         modified: string;
         modifiedBy: string;
-        fileType: 'folder' | 'excel';
+        fileType: FileType;
         isGlimmer: boolean;
     };
 
@@ -46,7 +48,7 @@ const renderGrid = () => {
         },
     ];
 
-    const fileTypeIconMap: Record<FileData['fileType'], string> = {
+    const fileTypeIconMap: Record<FileType, string> = {
         folder: 'glyphs:folder-duo',
         excel: 'vscode-icons:file-type-excel',
     };
