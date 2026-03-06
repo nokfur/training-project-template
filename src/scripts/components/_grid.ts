@@ -61,7 +61,7 @@ const renderGrid = () => {
         .map(
             data => `<tr class="border-bottom">
                             <td
-                                class="text-right"
+                                class="align-items-center d-flex justify-content-end"
                                 data-label="File Type"
                             >
                                 <iconify-icon
@@ -75,12 +75,10 @@ const renderGrid = () => {
                                 ${
                                     data.isGlimmer
                                         ? `<div class="position-relative">
-                                    <span class="glimmer">
                                         <iconify-icon
                                             icon="tabler:loader-quarter"
-                                            class="fs-5 text-pink"
+                                            class="fs-5 text-pink position-absolute -top-1 -left-2"
                                         ></iconify-icon>
-                                    </span>
 
                                     ${data.name}
                                 </div>`

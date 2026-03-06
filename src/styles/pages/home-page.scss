@@ -11,19 +11,19 @@
     }
 }
 
-// @each $key, $value in $spacers {
-//     // generate dimension utility classes
-//     // .top-1, .-top-1, ...
-//     @each $dimension in $dimensions {
-//         .#{$dimension}-#{$key} {
-//             #{$dimension}: $value !important;
-//         }
+@each $key, $value in $spacers {
+    // generate dimension utility classes
+    // .top-1, .-top-1, ...
+    @each $dimension in $dimensions {
+        .#{$dimension}-#{$key} {
+            #{$dimension}: $value !important;
+        }
 
-//         .-#{$dimension}-#{$key} {
-//             #{$dimension}: -$value !important;
-//         }
-//     }
-// }
+        .-#{$dimension}-#{$key} {
+            #{$dimension}: -$value !important;
+        }
+    }
+}
 
 .text-pink {
     color: $pink;
@@ -37,12 +37,6 @@
     &:hover {
         background-color: $light-gray;
     }
-}
-
-.glimmer {
-    position: absolute;
-    top: -#{space(1)};
-    left: -#{space(2)};
 }
 
 @media (max-width: $break-point-lg) {
@@ -67,7 +61,7 @@
 
             &:first-child {
                 background-color: $light-gray;
-                justify-content: space-between;
+                justify-content: space-between !important;
             }
 
             &:last-child {
@@ -85,12 +79,5 @@
                 margin-right: space(3);
             }
         }
-    }
-
-    .glimmer {
-        position: relative;
-        left: 0;
-        top: 0;
-        margin-right: -#{space(3)};
     }
 }
