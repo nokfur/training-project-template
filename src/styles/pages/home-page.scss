@@ -1,24 +1,36 @@
 // Home page styles
 @import 'master-page';
 
+@each $key, $value in $sizes {
+    .fs-#{$key} {
+        font-size: $value !important;
+    }
+
+    .border-#{$key} {
+        border-width: $value !important;
+    }
+}
+
+// @each $key, $value in $spacers {
+//     // generate dimension utility classes
+//     // .top-1, .-top-1, ...
+//     @each $dimension in $dimensions {
+//         .#{$dimension}-#{$key} {
+//             #{$dimension}: $value !important;
+//         }
+
+//         .-#{$dimension}-#{$key} {
+//             #{$dimension}: -$value !important;
+//         }
+//     }
+// }
+
 .text-pink {
     color: $pink;
 }
 
 .text-gray {
     color: $gray;
-}
-
-.border-2 {
-    border-width: $size-xs !important;
-}
-
-.icon-lg {
-    font-size: $size-xl;
-}
-
-.icon-md {
-    font-size: $size-lg;
 }
 
 .nav-item button {
@@ -29,8 +41,8 @@
 
 .glimmer {
     position: absolute;
-    top: -$size-md;
-    left: -$size-md;
+    top: -#{space(1)};
+    left: -#{space(2)};
 }
 
 @media (max-width: $break-point-lg) {
@@ -41,16 +53,17 @@
 
         tr {
             display: block;
-            border-radius: $size-md;
+            border-radius: size(2);
             background-color: $light-gray;
-            margin-bottom: $size-xxl;
+            margin-bottom: space(4);
         }
 
         td {
             display: flex;
-            margin: $size-sm;
-            background-color: $white;
+            margin: space(1);
+            background-color: white;
             align-items: center;
+            color: initial;
 
             &:first-child {
                 background-color: $light-gray;
@@ -63,14 +76,21 @@
 
             &::before {
                 content: attr(data-label);
-                font-weight: $bold;
+                font-weight: bold;
                 font-style: italic;
                 display: inline-block;
                 width: 20%;
                 min-width: fit-content;
                 text-align: left !important;
-                margin-right: $size-xl;
+                margin-right: space(3);
             }
         }
+    }
+
+    .glimmer {
+        position: relative;
+        left: 0;
+        top: 0;
+        margin-right: -#{space(3)};
     }
 }

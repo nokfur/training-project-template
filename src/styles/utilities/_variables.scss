@@ -3,13 +3,50 @@ $pink: #eb3687;
 $gray: #686868;
 $light-gray: #efefef;
 
-$size-xs: 2px;
-$size-sm: 4px;
-$size-md: 8px;
-$size-lg: 16px;
-$size-xl: 24px;
-$size-xxl: 32px;
+$size: 0.5rem !default;
+$sizes: () !default;
+$sizes: map-merge(
+    (
+        0: 0,
+        1: (
+            $size * 0.25,
+        ),
+        2: (
+            $size * 0.5,
+        ),
+        3: $size,
+        4: (
+            $size * 1.5,
+        ),
+        5: (
+            $size * 3,
+        ),
+    ),
+    $sizes
+);
 
-$bold: 600;
+$spacer: 1rem !default;
+$spacers: () !default;
+$spacers: map-merge(
+    (
+        0: 0,
+        1: (
+            $spacer * 0.25,
+        ),
+        2: (
+            $spacer * 0.5,
+        ),
+        3: $spacer,
+        4: (
+            $spacer * 1.5,
+        ),
+        5: (
+            $spacer * 3,
+        ),
+    ),
+    $spacers
+);
 
 $break-point-lg: 992px;
+
+$dimensions: ('top', 'bottom', 'left', 'right');

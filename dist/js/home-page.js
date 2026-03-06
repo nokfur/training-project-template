@@ -18114,7 +18114,7 @@ const renderGrid = () => {
                             >
                                 <iconify-icon
                                     icon=${fileTypeIconMap[data.fileType]}
-                                    class="icon-lg text-right align-self-end"
+                                    class="fs-5 text-right align-self-end"
                                 ></iconify-icon>
                             </td>
                             <td data-label="Name">
@@ -18122,7 +18122,7 @@ const renderGrid = () => {
                                     <span class="glimmer">
                                         <iconify-icon
                                             icon="tabler:loader-quarter"
-                                            class="icon-lg text-pink"
+                                            class="fs-5 text-pink"
                                         ></iconify-icon>
                                     </span>
 
@@ -18130,10 +18130,10 @@ const renderGrid = () => {
                                 </div>` : data.name}
 
                             </td>
-                            <td data-label="Modified">
+                            <td data-label="Modified" class="text-gray">
                                 ${data.modified}
                             </td>
-                            <td data-label="Modified By">
+                            <td data-label="Modified By" class="text-gray">
                                 ${data.modifiedBy}
                             </td>
                             <td></td>
