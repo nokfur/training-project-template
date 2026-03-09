@@ -1,6 +1,11 @@
 module.exports = {
-  parser: 'babel-eslint',
-  extends: ['airbnb-typescript-prettier'],
+  parser: '@babel/eslint-parser',
+  parserOptions: {
+    requireConfigFile: false,
+    ecmaVersion: 2020,
+    sourceType: 'module',
+  },
+  extends: ['airbnb', 'prettier'],
   plugins: ['prettier'],
   globals: {
     $: true,

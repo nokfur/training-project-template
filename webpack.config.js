@@ -1,21 +1,19 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries');
+const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
+const ESLintPlugin = require('eslint-webpack-plugin');
 const path = require('path');
-const glob = require('glob');
-const sass = require('sass');
+const { globSync } = require('glob');
 const LiveReloadPlugin = require('webpack-livereload-plugin');
-const NyanProgressPlugin = require('nyan-progress-webpack-plugin');
+const webpack = require('webpack');
 
-const getEntries = function() {
-  return glob
-    .sync(
-      './src/{scripts/pages,styles/pages}/**/!(_)*.{scss,js,ts,tsx}',
-    )
+const getEntries = function () {
+  return globSync('./src/{scripts/pages,styles/pages}/**/!(_)*.{scss,ts,js}')
+    .map(entry => './' + entry.replace(/\\/g, '/').replace(/^\.\//, ''))
     .reduce((entries, entry) => {
       const key = entry
         .split('/')
         .pop()
-        .replace(/.scss|.js|.ts|.tsx/gi, '');
+        .replace(/\.scss|\.ts|\.js/gi, '');
       let localEntries = { ...entries };
       if (key in entries) {
         localEntries[key].push(entry);
@@ -32,23 +30,18 @@ const commonConfig = {
   watch: true,
   devtool: 'source-map',
   stats: {
-    cached: false,
-    cachedAssets: false,
     children: false,
     chunks: true,
-    chunkOrigins: false,
-    chunkModules: false,
     entrypoints: false,
     colors: true,
-    env: true,
     modules: false,
-    reasons: false,
     warnings: true,
   },
   output: {
     filename: 'js/[name].js',
-    chunkFilename: '[name].bundle.js?ver=[chunkhash]',
-    path: path.join(__dirname, '/dist/'),
+    chunkFilename: '[name].bundle.js?ver=[contenthash]',
+    path: path.join(__dirname, '/dist'),
+    clean: true,
   },
 
   resolve: {
@@ -58,21 +51,12 @@ const commonConfig = {
   module: {
     rules: [
       {
-        enforce: 'pre',
-        test: /\.(ts|js)?$/,
-        exclude: /node_modules/,
-        loader: 'eslint-loader',
-        options: {
-          fix: true,
-        },
-      },
-      {
-        test: /\.(ts|js)?$/,
+        test: /\.(js)?$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
       },
       {
-        test: /\.(ts|tsx)?$/,
+        test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
@@ -86,45 +70,36 @@ const commonConfig = {
           {
             loader: 'sass-loader',
             options: {
-              implementation: sass,
+              sourceMap: true,
+              api: 'modern',
+              webpackImporter: true,
+              sassOptions: {
+                silenceDeprecations: ['import'],
+              },
             },
           },
         ],
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]',
-              outputPath: './../fonts',
-              useRelativePath: true,
-            },
-          },
-        ],
+        type: 'asset/resource',
+        generator: {
+          filename: '../fonts/[name][ext]',
+        },
       },
       {
         test: /\.(png|jpg|gif)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: 'images/[name].[ext]',
-            },
-          },
-        ],
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext]',
+        },
       },
       {
         test: /.*fonts.*\.svg$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: 'fonts/[name].[ext]',
-            },
-          },
-        ],
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]',
+        },
       },
       {
         test: /\.css$/i,
@@ -134,7 +109,7 @@ const commonConfig = {
   },
 
   plugins: [
-    new FixStyleOnlyEntriesPlugin(),
+    new RemoveEmptyScriptsPlugin(),
     new MiniCssExtractPlugin({
       filename: 'css/[name].css',
       chunkFilename: '[id].css',
@@ -142,7 +117,11 @@ const commonConfig = {
     new LiveReloadPlugin({
       protocol: 'http',
     }),
-    new NyanProgressPlugin(),
+    new ESLintPlugin({
+      extensions: ['js'],
+      fix: true,
+    }),
+    new webpack.ProgressPlugin(),
   ],
 };
 

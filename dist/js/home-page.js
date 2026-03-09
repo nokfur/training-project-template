@@ -18071,43 +18071,50 @@ module.exports = g;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 const renderGrid = () => {
-  const fileData = [{
-    name: 'CAS',
-    modified: 'April 30',
-    modifiedBy: 'Megan Bowen',
-    fileType: 'folder',
-    isGlimmer: false
-  }, {
-    name: 'CoasterAndBargeLoading.xlsx',
-    modified: 'A few seconds ago',
-    modifiedBy: 'Administrator MOD',
-    fileType: 'excel',
-    isGlimmer: true
-  }, {
-    name: 'RevenueByServices.xlsx',
-    modified: 'A few seconds ago',
-    modifiedBy: 'Administrator MOD',
-    fileType: 'excel',
-    isGlimmer: true
-  }, {
-    name: 'RevenueByServices2016.xlsx',
-    modified: 'A few seconds ago',
-    modifiedBy: 'Administrator MOD',
-    fileType: 'excel',
-    isGlimmer: true
-  }, {
-    name: 'RevenueByServices2017.xlsx',
-    modified: 'A few seconds ago',
-    modifiedBy: 'Administrator MOD',
-    fileType: 'excel',
-    isGlimmer: true
-  }];
-  const fileTypeIconMap = {
-    folder: 'glyphs:folder-duo',
-    excel: 'vscode-icons:file-type-excel'
-  };
-  const tableBody = document.querySelector('.table-body');
-  const html = fileData.map(data => `<tr class="border-bottom">
+    const fileData = [
+        {
+            name: 'CAS',
+            modified: 'April 30',
+            modifiedBy: 'Megan Bowen',
+            fileType: 'folder',
+            isGlimmer: false,
+        },
+        {
+            name: 'CoasterAndBargeLoading.xlsx',
+            modified: 'A few seconds ago',
+            modifiedBy: 'Administrator MOD',
+            fileType: 'excel',
+            isGlimmer: true,
+        },
+        {
+            name: 'RevenueByServices.xlsx',
+            modified: 'A few seconds ago',
+            modifiedBy: 'Administrator MOD',
+            fileType: 'excel',
+            isGlimmer: true,
+        },
+        {
+            name: 'RevenueByServices2016.xlsx',
+            modified: 'A few seconds ago',
+            modifiedBy: 'Administrator MOD',
+            fileType: 'excel',
+            isGlimmer: true,
+        },
+        {
+            name: 'RevenueByServices2017.xlsx',
+            modified: 'A few seconds ago',
+            modifiedBy: 'Administrator MOD',
+            fileType: 'excel',
+            isGlimmer: true,
+        },
+    ];
+    const fileTypeIconMap = {
+        folder: 'glyphs:folder-duo',
+        excel: 'vscode-icons:file-type-excel',
+    };
+    const tableBody = document.querySelector('.table-body');
+    const html = fileData
+        .map(data => `<tr class="border-bottom">
                             <td
                                 class="align-items-center d-flex justify-content-end"
                                 data-label="File Type"
@@ -18118,14 +18125,16 @@ const renderGrid = () => {
                                 ></iconify-icon>
                             </td>
                             <td data-label="Name">
-                                ${data.isGlimmer ? `<div class="position-relative">
+                                ${data.isGlimmer
+        ? `<div class="position-relative">
                                         <iconify-icon
                                             icon="tabler:loader-quarter"
                                             class="fs-5 text-pink position-absolute -top-1 -left-2"
                                         ></iconify-icon>
 
                                     ${data.name}
-                                </div>` : data.name}
+                                </div>`
+        : data.name}
 
                             </td>
                             <td data-label="Modified" class="text-gray">
@@ -18135,11 +18144,13 @@ const renderGrid = () => {
                                 ${data.modifiedBy}
                             </td>
                             <td></td>
-                        </tr>`).join('');
-  if (tableBody) tableBody.innerHTML = html;
+                        </tr>`)
+        .join('');
+    if (tableBody)
+        tableBody.innerHTML = html;
 };
-
 /* harmony default export */ __webpack_exports__["default"] = (renderGrid);
+
 
 /***/ }),
 
@@ -18160,8 +18171,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 Object(_utilities_helper__WEBPACK_IMPORTED_MODULE_0__["default"])(() => {
-  Object(_components_grid__WEBPACK_IMPORTED_MODULE_1__["default"])();
+    Object(_components_grid__WEBPACK_IMPORTED_MODULE_1__["default"])();
 });
+
 
 /***/ }),
 
@@ -18174,15 +18186,16 @@ Object(_utilities_helper__WEBPACK_IMPORTED_MODULE_0__["default"])(() => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-const ready = fn => {
-  if (document.readyState !== 'loading') {
-    fn();
-  } else {
-    document.addEventListener('DOMContentLoaded', fn);
-  }
+const ready = (fn) => {
+    if (document.readyState !== 'loading') {
+        fn();
+    }
+    else {
+        document.addEventListener('DOMContentLoaded', fn);
+    }
 };
-
 /* harmony default export */ __webpack_exports__["default"] = (ready);
+
 
 /***/ }),
 
@@ -18191,9 +18204,9 @@ const ready = fn => {
   !*** ./src/styles/pages/home-page.scss ***!
   \*****************************************/
 /*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-// extracted by mini-css-extract-plugin
+throw new Error("Module build failed (from ./node_modules/mini-css-extract-plugin/dist/loader.js):\nModuleBuildError: Module build failed (from ./node_modules/postcss-loader/src/index.js):\nJSONError: JSON Error in C:\\Storage\\Workspace\\FE\\training-project-template\\package.json:\nUnexpected token < in JSON at position 363 while parsing near '...evDependencies\": {\r<<<<<<< HEAD\r    \"@...'\n    at module.exports (C:\\Storage\\Workspace\\FE\\training-project-template\\node_modules\\cosmiconfig\\node_modules\\parse-json\\index.js:26:19)\n    at Object.loadJson (C:\\Storage\\Workspace\\FE\\training-project-template\\node_modules\\cosmiconfig\\dist\\loaders.js:15:12)\n    at Explorer.loadPackageProp (C:\\Storage\\Workspace\\FE\\training-project-template\\node_modules\\cosmiconfig\\dist\\createExplorer.js:176:35)\n    at Explorer.loadFileContent (C:\\Storage\\Workspace\\FE\\training-project-template\\node_modules\\cosmiconfig\\dist\\createExplorer.js:230:12)\n    at C:\\Storage\\Workspace\\FE\\training-project-template\\node_modules\\cosmiconfig\\dist\\createExplorer.js:252:21\n    at C:\\Storage\\Workspace\\FE\\training-project-template\\node_modules\\webpack\\lib\\NormalModule.js:316:20\n    at C:\\Storage\\Workspace\\FE\\training-project-template\\node_modules\\loader-runner\\lib\\LoaderRunner.js:367:11\n    at C:\\Storage\\Workspace\\FE\\training-project-template\\node_modules\\loader-runner\\lib\\LoaderRunner.js:233:18\n    at context.callback (C:\\Storage\\Workspace\\FE\\training-project-template\\node_modules\\loader-runner\\lib\\LoaderRunner.js:111:13)\n    at C:\\Storage\\Workspace\\FE\\training-project-template\\node_modules\\postcss-loader\\src\\index.js:208:9");
 
 /***/ }),
 
