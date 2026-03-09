@@ -1,99 +1,115 @@
-const renderGrid = () => {
-    // TODO: implement code to Render grid
-    type FileType = 'folder' | 'excel';
+import ExplorerItem from '../models/ExplorerItem';
+import File from '../models/File';
+import FileExtension from '../models/FileExtension';
+import Folder from '../models/Folder';
 
-    type FileData = {
-        name: string;
-        modified: string;
-        modifiedBy: string;
-        fileType: FileType;
-        isGlimmer: boolean;
-    };
-
-    const fileData: FileData[] = [
+function getData(): ExplorerItem[] {
+    const folderData: Folder[] = [
         {
+            id: '1',
             name: 'CAS',
             modified: 'April 30',
             modifiedBy: 'Megan Bowen',
-            fileType: 'folder',
-            isGlimmer: false,
-        },
-        {
-            name: 'CoasterAndBargeLoading.xlsx',
-            modified: 'A few seconds ago',
-            modifiedBy: 'Administrator MOD',
-            fileType: 'excel',
-            isGlimmer: true,
-        },
-        {
-            name: 'RevenueByServices.xlsx',
-            modified: 'A few seconds ago',
-            modifiedBy: 'Administrator MOD',
-            fileType: 'excel',
-            isGlimmer: true,
-        },
-        {
-            name: 'RevenueByServices2016.xlsx',
-            modified: 'A few seconds ago',
-            modifiedBy: 'Administrator MOD',
-            fileType: 'excel',
-            isGlimmer: true,
-        },
-        {
-            name: 'RevenueByServices2017.xlsx',
-            modified: 'A few seconds ago',
-            modifiedBy: 'Administrator MOD',
-            fileType: 'excel',
-            isGlimmer: true,
+            files: [],
+            subFolders: [],
         },
     ];
 
-    const fileTypeIconMap: Record<FileType, string> = {
+    const fileData: File[] = [
+        {
+            id: '1',
+            name: 'CoasterAndBargeLoading.xlsx',
+            modified: 'A few seconds ago',
+            modifiedBy: 'Administrator MOD',
+            extension: 'xlsx',
+        },
+        {
+            id: '2',
+            name: 'RevenueByServices.xlsx',
+            modified: 'A few seconds ago',
+            modifiedBy: 'Administrator MOD',
+            extension: 'xlsx',
+        },
+        {
+            id: '3',
+            name: 'RevenueByServices2016.xlsx',
+            modified: 'A few seconds ago',
+            modifiedBy: 'Administrator MOD',
+            extension: 'xlsx',
+        },
+        {
+            id: '4',
+            name: 'RevenueByServices2017.xlsx',
+            modified: 'A few seconds ago',
+            modifiedBy: 'Administrator MOD',
+            extension: 'xlsx',
+        },
+    ];
+
+    return [
+        ...folderData.map(folder => ({
+            ...folder,
+            type: 'folder' as const,
+        })),
+        ...fileData.map(file => ({
+            ...file,
+            type: 'file' as const,
+        })),
+    ];
+}
+
+function getItemIcon(item: ExplorerItem): string {
+    const itemIconMap: Record<'folder' | FileExtension, string> = {
         folder: 'glyphs:folder-duo',
-        excel: 'vscode-icons:file-type-excel',
+        xlsx: 'vscode-icons:file-type-excel',
+        docs: 'vscode-icons:file-type-doc',
+        pptx: 'vscode-icons:file-type-ppt',
     };
+
+    if (item.type === 'folder') {
+        return 'glyphs:folder-duo';
+    }
+
+    return itemIconMap[item.extension];
+}
+
+const renderGrid = () => {
+    // TODO: implement code to Render grid
+    const data = getData();
 
     const tableBody: HTMLElement | null = document.querySelector(
         '.table-body',
     );
 
-    const html = fileData
+    const html = data
         .map(
-            data => `<tr class="border-bottom">
-                            <td
-                                class="align-items-center d-flex justify-content-end"
-                                data-label="File Type"
-                            >
-                                <iconify-icon
-                                    icon=${
-                                        fileTypeIconMap[data.fileType]
-                                    }
-                                    class="fs-5 text-right align-self-end"
-                                ></iconify-icon>
-                            </td>
-                            <td data-label="Name">
-                                ${
-                                    data.isGlimmer
-                                        ? `<div class="position-relative">
-                                        <iconify-icon
-                                            icon="tabler:loader-quarter"
-                                            class="fs-5 text-pink position-absolute -top-1 -left-2"
-                                        ></iconify-icon>
+            data => `<tr>
+                        <td data-label="File Type">
+                            <div class="d-flex align-items-center justify-content-end h-100">
+                                <iconify-icon icon="${getItemIcon(data)}" class="fs-4"></iconify-icon>
+                            </div>
+                        </td>
+                        <td class="align-items-center" data-label="Name">
+                            ${
+                                // show glimmer if the item is a file
+                                data.type === 'file'
+                                    ? `<div class="position-relative">
+                                        <iconify-icon icon="tabler:loader-quarter" class="fs-5 text-pink position-absolute -top-1 -left-2">
+                                        </iconify-icon>
 
-                                    ${data.name}
-                                </div>`
-                                        : data.name
-                                }
-
-                            </td>
-                            <td data-label="Modified" class="text-gray">
-                                ${data.modified}
-                            </td>
-                            <td data-label="Modified By" class="text-gray">
-                                ${data.modifiedBy}
-                            </td>
-                            <td></td>
-                        </tr>`,
+                                        ${data.name}
+                                    </div>`
+                                    : data.name
+                            }
+                        </td>
+                        <td data-label="Modified" class="text-secondary">
+                            ${data.modified}
+                        </td>
+                        <td data-label="Modified By" class="text-secondary">
+                            ${data.modifiedBy}
+                        </td>
+                        <td></td>
+                    </tr>`,
         )
         .join('');
 

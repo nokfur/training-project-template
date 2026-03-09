@@ -1,16 +1,6 @@
 // Home page styles
 @import 'master-page';
 
-@each $key, $value in $sizes {
-    .fs-#{$key} {
-        font-size: $value !important;
-    }
-
-    .border-#{$key} {
-        border-width: $value !important;
-    }
-}
-
 @each $key, $value in $spacers {
     // generate dimension utility classes
     // .top-1, .-top-1, ...
@@ -25,42 +15,41 @@
     }
 }
 
-.text-pink {
+.text-pink{
     color: $pink;
-}
-
-.text-gray {
-    color: $gray;
 }
 
 .nav-item button {
     &:hover {
-        background-color: $light-gray;
+        background-color: $gray-200;
     }
 }
 
-@media (max-width: $break-point-lg) {
-    .table {
+@include media-breakpoint-down(lg) {
+    .table {        
         thead {
             display: none;
         }
 
         tr {
-            display: block;
-            border-radius: size(2);
-            background-color: $light-gray;
-            margin-bottom: space(4);
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            border-radius: map-get($spacers, 2);
+            background-color: $gray-200;
+            margin-bottom: map-get($spacers, 4);
+            gap: map-get($spacers, 1);
+            padding: map-get($spacers, 1);
         }
 
         td {
-            display: flex;
-            margin: space(1);
+            display: flex;            
             background-color: white;
             align-items: center;
-            color: initial;
+            color: initial !important;
 
             &:first-child {
-                background-color: $light-gray;
+                background-color: $gray-200;
                 justify-content: space-between !important;
             }
 
@@ -76,8 +65,16 @@
                 width: 20%;
                 min-width: fit-content;
                 text-align: left !important;
-                margin-right: space(3);
+                margin-right: map-get($spacers, 3);
             }
+        }
+    }
+
+    .table-body {
+        border-style: none !important;
+
+        & td {
+            border-style: none !important;
         }
     }
 }

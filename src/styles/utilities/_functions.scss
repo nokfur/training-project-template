@@ -1,8 +1,1 @@
 // Define functions
-@function space($key) {
-    @return map-get($spacers, $key);
-}
-
-@function size($key) {
-    @return map-get($sizes, $key);
-}
