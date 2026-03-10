@@ -12188,6 +12188,19 @@ textarea.form-control-lg {
   font-weight: 500;
 }
 
+.explorer-item:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.table-body tr:hover input[type=checkbox],
+.table-body tr input[type=checkbox]:checked {
+  opacity: 1 !important;
+}
+.table-body tr:has(input[type=checkbox]:checked) .explorer-actions {
+  display: inline-flex !important;
+}
+
 @media (max-width: 991.98px) {
   .table thead {
     display: none;
@@ -12208,11 +12221,11 @@ textarea.form-control-lg {
     align-items: center;
     color: initial !important;
   }
-  .table td:first-child {
+  .table td:nth-child(2) {
     background-color: #e9ecef;
     justify-content: space-between !important;
   }
-  .table td:last-child {
+  .table td:first-child, .table td:last-child {
     display: none;
   }
   .table td::before {

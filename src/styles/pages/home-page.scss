@@ -29,6 +29,26 @@
     font-weight: $font-weight-medium;
 }
 
+.explorer-item {
+    &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+}
+
+.table-body {
+    tr {
+        &:hover input[type='checkbox'],
+        input[type='checkbox']:checked {
+            opacity: 1 !important;
+        }
+
+        &:has(input[type='checkbox']:checked) .explorer-actions {
+            display: inline-flex !important;
+        }
+    }
+}
+
 @include media-breakpoint-down(lg) {
     .table {
         thead {
@@ -52,11 +72,12 @@
             align-items: center;
             color: initial !important;
 
-            &:first-child {
+            &:nth-child(2) {
                 background-color: $gray-200;
                 justify-content: space-between !important;
             }
 
+            &:first-child,
             &:last-child {
                 display: none;
             }

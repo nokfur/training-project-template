@@ -7421,8 +7421,8 @@ function getItemIcon(data, type) {
     const itemIconMap = {
         folder: 'glyphs:folder-duo',
         xlsx: 'vscode-icons:file-type-excel',
-        docs: 'vscode-icons:file-type-doc',
-        pptx: 'vscode-icons:file-type-ppt',
+        docs: 'vscode-icons:file-type-word',
+        pptx: 'vscode-icons:file-type-powerpoint2',
     };
     if (type === 'folder') {
         return itemIconMap[type];
@@ -7430,31 +7430,59 @@ function getItemIcon(data, type) {
     return itemIconMap[data.extension];
 }
 function renderRow(data, type) {
-    return `<tr ${type === 'folder' ? `data-folder-name="${data.name}"` : ''}>
-                <td data-label="File Type">
-                    <div class="d-flex align-items-center justify-content-end h-100">
+    return `<tr data-item-name="${data.name}" data-item-type="${type}">
+                <td class="align-middle">
+                    <div class="d-flex justify-content-center">
+                        <input class="form-check-input opacity-0" type="checkbox" value="${data.name}">
+                    </div>
+                </td>
+                <td class="align-middle" data-label="File Type">
+                    <div class="d-flex align-items-center justify-content-end">
                         <iconify-icon icon="${getItemIcon(data, type)}" class="fs-4"></iconify-icon>
                     </div>
                 </td>
-                <td class="align-items-center" data-label="Name">
+                <td class="align-middle" data-label="Name">
                     ${
     // show glimmer if the item is a file
     type === 'file'
-        ? `<div class="position-relative">
+        ? `<div class="position-relative d-inline-block explorer-item">
                                 <iconify-icon icon="tabler:loader-quarter" class="fs-5 text-pink position-absolute -top-1 -left-2">
                                 </iconify-icon>
 
                                 ${data.name}
                             </div>`
-        : data.name}
+        : `<span class="explorer-item">${data.name}</span>`}
                 </td>
-                <td data-label="Modified" class="text-secondary">
+                <td data-label="Modified" class="text-secondary align-middle">
                     ${data.modified}
                 </td>
-                <td data-label="Modified By" class="text-secondary">
+                <td data-label="Modified By" class="text-secondary align-middle">
                     ${data.modifiedBy}
                 </td>
-                <td></td>
+                <td class="align-middle">
+                    <div class="d-flex justify-content-end">
+                        <div class="explorer-actions d-none gap-2">
+                            <button class="btn btn-sm d-flex align-items-center" data-action="update">
+                                <iconify-icon icon="mi:pen" class="fs-5 text-success">
+                                </iconify-icon>
+                            </button>
+                            <button class="btn btn-sm d-flex align-items-center" data-action="delete">
+                                <iconify-icon icon="si:bin-line" class="fs-5 text-danger">
+                                </iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+}
+function renderCustomTableMessage(content) {
+    const colCount = document.querySelectorAll('thead th').length || 6;
+    return `<tr>
+                <td colspan="${colCount}">
+                    <div class="d-flex justify-content-center align-items-center my-4">
+                        ${content}
+                    </div>
+                </td>
             </tr>`;
 }
 function renderTableData() {
@@ -7464,22 +7492,25 @@ function renderTableData() {
     if (!tableBody)
         return;
     // mock loading state with spinner
-    tableBody.innerHTML = `<tr>
-                                <td colspan="5">
-                                    <div class="d-flex justify-content-center align-items-center my-4">
-                                        <div class="spinner-border" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>`;
+    tableBody.innerHTML = renderCustomTableMessage(`
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    `);
     // mock loading state
     setTimeout(() => {
-        const html = [
+        if (data === null) {
+            tableBody.innerHTML = renderCustomTableMessage(`<span>Folder not found</span>`);
+            return;
+        }
+        if (data.files.length === 0 && data.subFolders.length === 0) {
+            tableBody.innerHTML = renderCustomTableMessage(`<span>This folder is empty</span>`);
+            return;
+        }
+        tableBody.innerHTML = [
             ...data.subFolders.map((data) => renderRow(data, 'folder')),
             ...data.files.map((data) => renderRow(data, 'file')),
         ].join('');
-        tableBody.innerHTML = html;
     }, 1000);
 }
 function renderBreadcrumb() {
@@ -7589,8 +7620,92 @@ function openFolder(folderName) {
         : folderName;
     setFolderPath(newPath);
 }
+function handleRename(selectedItemName, itemType) {
+    let newName = prompt(`Enter new ${itemType} name:`, selectedItemName).trim();
+    if (!newName || newName === selectedItemName)
+        return;
+    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.loadExplorer)();
+    const currentFolder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getCurrentFolder)(explorer);
+    if (!currentFolder)
+        return;
+    if (itemType === 'folder') {
+        const folder = currentFolder.subFolders.find((f) => f.name === selectedItemName);
+        if (folder)
+            folder.name = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getUniqueName)(currentFolder, newName, 'folder');
+    }
+    if (itemType === 'file') {
+        const file = currentFolder.files.find((f) => f.name === selectedItemName);
+        let newExt = file.extension;
+        // if user changes file extension, validate it
+        if (newName.includes('.')) {
+            const parts = newName.split('.');
+            const ext = parts[parts.length - 1];
+            if (!_models_FileExtension__WEBPACK_IMPORTED_MODULE_1__.FILE_EXTENSIONS.includes(ext)) {
+                alert(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_1__.FILE_EXTENSIONS.join(', ')} allowed.`);
+                return;
+            }
+            newExt = ext;
+        }
+        else
+            newName += `.${file.extension}`; // keep old extension if user not input extension part
+        file.name = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getUniqueName)(currentFolder, newName, 'file');
+        file.extension = newExt;
+    }
+    (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.saveExplorer)(explorer);
+    (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
+}
+function handleDelete(selectedItemName, itemType) {
+    const confirmed = confirm(`Are you sure you want to delete "${selectedItemName}"?`);
+    if (!confirmed)
+        return;
+    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.loadExplorer)();
+    const currentFolder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getCurrentFolder)(explorer);
+    if (!currentFolder)
+        return;
+    if (itemType === 'folder') {
+        currentFolder.subFolders = currentFolder.subFolders.filter((folder) => folder.name !== selectedItemName);
+    }
+    else {
+        currentFolder.files = currentFolder.files.filter((file) => file.name !== selectedItemName);
+    }
+    (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.saveExplorer)(explorer);
+    (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
+}
+function handleRowAction(target, row) {
+    const btn = target.closest('[data-action]');
+    if (!btn)
+        return false;
+    const action = btn.dataset.action;
+    const selectedItemName = row.dataset.itemName;
+    const itemType = row.dataset.itemType;
+    if (action === 'update')
+        handleRename(selectedItemName, itemType);
+    if (action === 'delete')
+        handleDelete(selectedItemName, itemType);
+    return true;
+}
+function handleFolderNavigation(target, row) {
+    if (!target.closest('.explorer-item'))
+        return false;
+    const itemName = row.dataset.itemName;
+    const itemType = row.dataset.itemType;
+    if (itemType !== 'folder')
+        return true;
+    openFolder(itemName);
+    return true;
+}
+function toggleRowSelection(row, tableBody) {
+    const checkbox = row.querySelector('input[type="checkbox"]');
+    if (!checkbox)
+        return;
+    const checked = checkbox.checked;
+    tableBody
+        ?.querySelectorAll('input[type="checkbox"]')
+        .forEach((cb) => (cb.checked = false));
+    checkbox.checked = !checked;
+}
 const initialize = () => {
-    const uploadBtn = document.querySelector('#fileUpload');
+    const uploadBtn = document.querySelector('#fileUploadBtn');
     const newFolderBtn = document.querySelector('#newFolderBtn');
     const tableBody = document.querySelector('.table-body');
     const breadCrumb = document.querySelector('.breadcrumb');
@@ -7609,13 +7724,15 @@ const initialize = () => {
         handleCreateFolder();
     });
     tableBody?.addEventListener('click', (e) => {
-        const row = e.target.closest('[data-folder-name]');
+        const target = e.target;
+        const row = target.closest('tr');
         if (!row)
             return;
-        const folderName = row.dataset.folderName;
-        if (!folderName)
+        if (handleRowAction(target, row))
             return;
-        openFolder(folderName);
+        if (handleFolderNavigation(target, row))
+            return;
+        toggleRowSelection(row, tableBody);
     });
     breadCrumb?.addEventListener('click', (e) => {
         const button = e.target.closest('[data-folder-path]');
@@ -7895,8 +8012,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__["default"])(() => {
-    (0,_components_init__WEBPACK_IMPORTED_MODULE_3__["default"])();
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_1__["default"])();
+    (0,_components_init__WEBPACK_IMPORTED_MODULE_3__["default"])();
 });
 
 }();

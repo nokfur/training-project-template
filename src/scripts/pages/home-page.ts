@@ -4,6 +4,6 @@ import 'bootstrap';
 import initialize from '../components/_init';
 
 ready(() => {
-    initialize();
     renderGrid();
+    initialize();
 });
