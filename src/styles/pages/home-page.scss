@@ -15,18 +15,22 @@
     }
 }
 
-.text-pink{
+.text-pink {
     color: $pink;
 }
 
-.nav-item button {
-    &:hover {
-        background-color: $gray-200;
-    }
+.nav-item .btn:hover,
+.breadcrumb .btn:hover {
+    background-color: $gray-200;
+}
+
+.breadcrumb-item.active .btn {
+    pointer-events: none;
+    font-weight: $font-weight-medium;
 }
 
 @include media-breakpoint-down(lg) {
-    .table {        
+    .table {
         thead {
             display: none;
         }
@@ -43,7 +47,7 @@
         }
 
         td {
-            display: flex;            
+            display: flex;
             background-color: white;
             align-items: center;
             color: initial !important;

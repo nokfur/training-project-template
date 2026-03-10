@@ -7413,18 +7413,342 @@ defineJQueryPlugin(Toast);
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
-function getData() {
-    const folderData = [
-        {
-            id: '1',
-            name: 'CAS',
-            modified: 'April 30',
-            modifiedBy: 'Megan Bowen',
+/* harmony import */ var _utilities_storage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_storage */ "./src/scripts/utilities/_storage.ts");
+/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
+
+
+function getItemIcon(data, type) {
+    const itemIconMap = {
+        folder: 'glyphs:folder-duo',
+        xlsx: 'vscode-icons:file-type-excel',
+        docs: 'vscode-icons:file-type-doc',
+        pptx: 'vscode-icons:file-type-ppt',
+    };
+    if (type === 'folder') {
+        return itemIconMap[type];
+    }
+    return itemIconMap[data.extension];
+}
+function renderRow(data, type) {
+    return `<tr ${type === 'folder' ? `data-folder-name="${data.name}"` : ''}>
+                <td data-label="File Type">
+                    <div class="d-flex align-items-center justify-content-end h-100">
+                        <iconify-icon icon="${getItemIcon(data, type)}" class="fs-4"></iconify-icon>
+                    </div>
+                </td>
+                <td class="align-items-center" data-label="Name">
+                    ${
+    // show glimmer if the item is a file
+    type === 'file'
+        ? `<div class="position-relative">
+                                <iconify-icon icon="tabler:loader-quarter" class="fs-5 text-pink position-absolute -top-1 -left-2">
+                                </iconify-icon>
+
+                                ${data.name}
+                            </div>`
+        : data.name}
+                </td>
+                <td data-label="Modified" class="text-secondary">
+                    ${data.modified}
+                </td>
+                <td data-label="Modified By" class="text-secondary">
+                    ${data.modifiedBy}
+                </td>
+                <td></td>
+            </tr>`;
+}
+function renderTableData() {
+    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_0__.loadExplorer)();
+    const data = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_1__.getCurrentFolder)(explorer);
+    const tableBody = document.querySelector('.table-body');
+    if (!tableBody)
+        return;
+    // mock loading state with spinner
+    tableBody.innerHTML = `<tr>
+                                <td colspan="5">
+                                    <div class="d-flex justify-content-center align-items-center my-4">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>`;
+    // mock loading state
+    setTimeout(() => {
+        const html = [
+            ...data.subFolders.map((data) => renderRow(data, 'folder')),
+            ...data.files.map((data) => renderRow(data, 'file')),
+        ].join('');
+        tableBody.innerHTML = html;
+    }, 1000);
+}
+function renderBreadcrumb() {
+    const container = document.querySelector('.breadcrumb');
+    if (!container)
+        return;
+    const folderPath = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_1__.getFolderPath)();
+    let accumulatedPath = '';
+    let html = `<li class="breadcrumb-item fs-3">
+                    <button class="btn fs-3 border-0" data-folder-path="">Documents</button>
+                </li>`;
+    html += folderPath
+        .map((folderName, index) => {
+        accumulatedPath += (index === 0 ? '' : '/') + folderName;
+        const isLast = index === folderPath.length - 1;
+        return `<li class="breadcrumb-item fs-3 d-inline-flex align-items-center ${isLast ? 'active' : ''}">
+                        <button class="btn fs-3 border-0" data-folder-path="${accumulatedPath}">${folderName}</button>
+                    </li>`;
+    })
+        .join('');
+    container.innerHTML = html;
+}
+const renderGrid = () => {
+    // TODO: implement code to Render grid
+    renderTableData();
+    renderBreadcrumb();
+};
+/* harmony default export */ __webpack_exports__["default"] = (renderGrid);
+
+
+/***/ }),
+
+/***/ "./src/scripts/components/_init.ts":
+/*!*****************************************!*\
+  !*** ./src/scripts/components/_init.ts ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
+/* harmony import */ var _models_FileExtension__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/FileExtension */ "./src/scripts/models/FileExtension.ts");
+/* harmony import */ var _utilities_storage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/_storage */ "./src/scripts/utilities/_storage.ts");
+/* harmony import */ var _grid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_grid */ "./src/scripts/components/_grid.ts");
+
+
+
+
+function handleFileUpload(file) {
+    const ext = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getFileExtension)(file.name);
+    if (!_models_FileExtension__WEBPACK_IMPORTED_MODULE_1__.FILE_EXTENSIONS.includes(ext)) {
+        alert(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_1__.FILE_EXTENSIONS.join(', ')} allowed.`);
+        return;
+    }
+    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.loadExplorer)();
+    const folder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getCurrentFolder)(explorer);
+    if (folder) {
+        const fileData = {
+            id: crypto.randomUUID(),
+            name: (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getUniqueName)(folder, file.name, 'file'),
+            extension: ext,
+            modified: (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.formatDate)(new Date().toISOString()),
+            modifiedBy: 'Administrator MOD',
+        };
+        folder.files.push(fileData);
+        (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.saveExplorer)(explorer);
+        (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    }
+}
+function handleCreateFolder() {
+    const folderName = prompt('Enter folder name:');
+    if (!folderName) {
+        alert('Folder name cannot be empty.');
+        return;
+    }
+    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.loadExplorer)();
+    const parentFolder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getCurrentFolder)(explorer);
+    if (parentFolder) {
+        const newFolder = {
+            id: crypto.randomUUID(),
+            name: (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getUniqueName)(parentFolder, folderName, 'folder'),
+            modified: (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.formatDate)(new Date().toISOString()),
+            modifiedBy: 'Administrator MOD',
             files: [],
             subFolders: [],
-        },
-    ];
-    const fileData = [
+        };
+        parentFolder.subFolders.push(newFolder);
+        (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.saveExplorer)(explorer);
+        (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    }
+}
+function setFolderPath(path) {
+    const params = new URLSearchParams(window.location.search);
+    if (!path) {
+        params.delete('folder');
+    }
+    else {
+        params.set('folder', path);
+    }
+    history.pushState({}, '', `?${params.toString()}`);
+    (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
+}
+function openFolder(folderName) {
+    const params = new URLSearchParams(window.location.search);
+    let currentPath = params.get('folder');
+    const newPath = currentPath
+        ? `${currentPath}/${folderName}`
+        : folderName;
+    setFolderPath(newPath);
+}
+const initialize = () => {
+    const uploadBtn = document.querySelector('#fileUpload');
+    const newFolderBtn = document.querySelector('#newFolderBtn');
+    const tableBody = document.querySelector('.table-body');
+    const breadCrumb = document.querySelector('.breadcrumb');
+    uploadBtn?.addEventListener('change', (e) => {
+        const input = e.target;
+        const files = input.files;
+        if (!files || files.length === 0)
+            return;
+        for (const file of files) {
+            handleFileUpload(file);
+        }
+        // reset file input to allow uploading same file again if needed
+        input.value = '';
+    });
+    newFolderBtn?.addEventListener('click', () => {
+        handleCreateFolder();
+    });
+    tableBody?.addEventListener('click', (e) => {
+        const row = e.target.closest('[data-folder-name]');
+        if (!row)
+            return;
+        const folderName = row.dataset.folderName;
+        if (!folderName)
+            return;
+        openFolder(folderName);
+    });
+    breadCrumb?.addEventListener('click', (e) => {
+        const button = e.target.closest('[data-folder-path]');
+        if (!button)
+            return;
+        const folderPath = button.dataset.folderPath;
+        setFolderPath(folderPath);
+    });
+    // reload page when user navigates with browser back/forward buttons
+    window.addEventListener('popstate', () => {
+        (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    });
+};
+/* harmony default export */ __webpack_exports__["default"] = (initialize);
+
+
+/***/ }),
+
+/***/ "./src/scripts/models/FileExtension.ts":
+/*!*********************************************!*\
+  !*** ./src/scripts/models/FileExtension.ts ***!
+  \*********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FILE_EXTENSIONS: function() { return /* binding */ FILE_EXTENSIONS; }
+/* harmony export */ });
+const FILE_EXTENSIONS = ["xlsx", "docs", "pptx"];
+
+
+/***/ }),
+
+/***/ "./src/scripts/utilities/_helper.ts":
+/*!******************************************!*\
+  !*** ./src/scripts/utilities/_helper.ts ***!
+  \******************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   formatDate: function() { return /* binding */ formatDate; },
+/* harmony export */   getCurrentFolder: function() { return /* binding */ getCurrentFolder; },
+/* harmony export */   getFileExtension: function() { return /* binding */ getFileExtension; },
+/* harmony export */   getFolderPath: function() { return /* binding */ getFolderPath; },
+/* harmony export */   getUniqueName: function() { return /* binding */ getUniqueName; }
+/* harmony export */ });
+const ready = (fn) => {
+    if (document.readyState !== 'loading') {
+        fn();
+    }
+    else {
+        document.addEventListener('DOMContentLoaded', fn);
+    }
+};
+/* harmony default export */ __webpack_exports__["default"] = (ready);
+function getFileExtension(filename) {
+    return filename.split('.').pop()?.toLowerCase() ?? '';
+}
+function getFolderPath() {
+    const params = new URLSearchParams(window.location.search);
+    const folderPath = params.get('folder');
+    if (!folderPath)
+        return [];
+    return folderPath.split('/');
+}
+function getCurrentFolder(root) {
+    const folderPath = getFolderPath();
+    if (folderPath.length === 0)
+        return root;
+    let currentFolder = root;
+    for (const folderName of folderPath) {
+        let found = false;
+        for (const subFolder of currentFolder.subFolders) {
+            if (subFolder.name === folderName) {
+                currentFolder = subFolder;
+                found = true;
+                break;
+            }
+        }
+        // no matching folder found, return null to indicate invalid path
+        if (!found)
+            return null;
+    }
+    return currentFolder;
+}
+function isNameDuplicate(folder, name, type) {
+    if (type === 'folder') {
+        return folder.subFolders.some((f) => f.name === name);
+    }
+    return folder.files.some((f) => f.name === name);
+}
+function getUniqueName(folder, baseName, type) {
+    let name = baseName;
+    let counter = 1;
+    while (isNameDuplicate(folder, name, type)) {
+        name = `${baseName} (${counter})`;
+        counter++;
+    }
+    return name;
+}
+function formatDate(value) {
+    const timestamp = Date.parse(value);
+    // if value is not a valid date, return it as is (e.g. "a few seconds ago")
+    if (Number.isNaN(timestamp)) {
+        return value;
+    }
+    const date = new Date(timestamp);
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${mm}/${dd}/${yyyy} ${hh}:${min}`;
+}
+
+
+/***/ }),
+
+/***/ "./src/scripts/utilities/_storage.ts":
+/*!*******************************************!*\
+  !*** ./src/scripts/utilities/_storage.ts ***!
+  \*******************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   loadExplorer: function() { return /* binding */ loadExplorer; },
+/* harmony export */   saveExplorer: function() { return /* binding */ saveExplorer; }
+/* harmony export */ });
+const STORAGE_KEY = 'explorer';
+function mockFileData() {
+    return [
         {
             id: '1',
             name: 'CoasterAndBargeLoading.xlsx',
@@ -7454,85 +7778,40 @@ function getData() {
             extension: 'xlsx',
         },
     ];
+}
+function mockFolderData() {
     return [
-        ...folderData.map(folder => ({
-            ...folder,
-            type: 'folder',
-        })),
-        ...fileData.map(file => ({
-            ...file,
-            type: 'file',
-        })),
+        {
+            id: '1',
+            name: 'CAS',
+            modified: 'April 30',
+            modifiedBy: 'Megan Bowen',
+            files: [],
+            subFolders: [],
+        },
     ];
 }
-function getItemIcon(item) {
-    const itemIconMap = {
-        folder: 'glyphs:folder-duo',
-        xlsx: 'vscode-icons:file-type-excel',
-        docs: 'vscode-icons:file-type-doc',
-        pptx: 'vscode-icons:file-type-ppt',
+function initExplorer() {
+    const root = {
+        id: 'root',
+        name: 'Root',
+        modified: new Date().toISOString(),
+        modifiedBy: 'System',
+        files: mockFileData(),
+        subFolders: mockFolderData(),
     };
-    if (item.type === 'folder') {
-        return 'glyphs:folder-duo';
-    }
-    return itemIconMap[item.extension];
+    saveExplorer(root);
 }
-const renderGrid = () => {
-    // TODO: implement code to Render grid
-    const data = getData();
-    const tableBody = document.querySelector('.table-body');
-    const html = data
-        .map(data => `<tr>
-                        <td data-label="File Type">
-                            <div class="d-flex align-items-center justify-content-end h-100">
-                                <iconify-icon icon="${getItemIcon(data)}" class="fs-4"></iconify-icon>
-                            </div>
-                        </td>
-                        <td class="align-items-center" data-label="Name">
-                            ${
-    // show glimmer if the item is a file
-    data.type === 'file'
-        ? `<div class="position-relative">
-                                        <iconify-icon icon="tabler:loader-quarter" class="fs-5 text-pink position-absolute -top-1 -left-2">
-                                        </iconify-icon>
-
-                                        ${data.name}
-                                    </div>`
-        : data.name}
-                        </td>
-                        <td data-label="Modified" class="text-secondary">
-                            ${data.modified}
-                        </td>
-                        <td data-label="Modified By" class="text-secondary">
-                            ${data.modifiedBy}
-                        </td>
-                        <td></td>
-                    </tr>`)
-        .join('');
-    if (tableBody)
-        tableBody.innerHTML = html;
-};
-/* harmony default export */ __webpack_exports__["default"] = (renderGrid);
-
-
-/***/ }),
-
-/***/ "./src/scripts/utilities/_helper.ts":
-/*!******************************************!*\
-  !*** ./src/scripts/utilities/_helper.ts ***!
-  \******************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-const ready = (fn) => {
-    if (document.readyState !== 'loading') {
-        fn();
-    }
-    else {
-        document.addEventListener('DOMContentLoaded', fn);
-    }
-};
-/* harmony default export */ __webpack_exports__["default"] = (ready);
+function loadExplorer() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data)
+        return JSON.parse(data);
+    initExplorer();
+    return loadExplorer();
+}
+function saveExplorer(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
 
 
 /***/ })
@@ -7610,10 +7889,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
 /* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+/* harmony import */ var _components_init__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/_init */ "./src/scripts/components/_init.ts");
+
 
 
 
 (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__["default"])(() => {
+    (0,_components_init__WEBPACK_IMPORTED_MODULE_3__["default"])();
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_1__["default"])();
 });
 

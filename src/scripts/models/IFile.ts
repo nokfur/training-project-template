@@ -1,6 +1,6 @@
-import FileExtension from './FileExtension';
+import {FileExtension} from './FileExtension';
 
-export default interface File {
+export default interface IFile {
     id: string;
     name: string;
     extension: FileExtension;

@@ -12178,8 +12178,14 @@ textarea.form-control-lg {
   color: #d63384;
 }
 
-.nav-item button:hover {
+.nav-item .btn:hover,
+.breadcrumb .btn:hover {
   background-color: #e9ecef;
+}
+
+.breadcrumb-item.active .btn {
+  pointer-events: none;
+  font-weight: 500;
 }
 
 @media (max-width: 991.98px) {
