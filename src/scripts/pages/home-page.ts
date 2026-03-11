@@ -1,12 +1,10 @@
 import ready from '../utilities/_helper';
 import renderGrid from '../components/_grid';
 import 'bootstrap';
-import bindFileService from '../services/_fileService';
-import bindFolderService from '../services/_folderService';
+import bindOneTimeServices from '../services/bindOneTimeServices';
 
 ready(() => {
     renderGrid();
 
-    bindFileService();
-    bindFolderService();
+    bindOneTimeServices();
 });

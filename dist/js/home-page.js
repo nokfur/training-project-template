@@ -7447,7 +7447,7 @@ const renderBreadcrumb = () => {
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _services_bindItemServices__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/_bindItemServices */ "./src/scripts/services/_bindItemServices.ts");
+/* harmony import */ var _services_bindItemServices__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/bindItemServices */ "./src/scripts/services/bindItemServices.ts");
 /* harmony import */ var _breadCrumb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_breadCrumb */ "./src/scripts/components/_breadCrumb.ts");
 /* harmony import */ var _tableData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_tableData */ "./src/scripts/components/_tableData.ts");
 
@@ -7590,32 +7590,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FILE_EXTENSIONS: function() { return /* binding */ FILE_EXTENSIONS; }
 /* harmony export */ });
 const FILE_EXTENSIONS = ["xlsx", "docs", "pptx"];
-
-
-/***/ }),
-
-/***/ "./src/scripts/services/_bindItemServices.ts":
-/*!***************************************************!*\
-  !*** ./src/scripts/services/_bindItemServices.ts ***!
-  \***************************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
-/* harmony import */ var _breadCrumbService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_breadCrumbService */ "./src/scripts/services/_breadCrumbService.ts");
-/* harmony import */ var _rowService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_rowService */ "./src/scripts/services/_rowService.ts");
-
-
-
-const bindItemServices = () => {
-    (0,_breadCrumbService__WEBPACK_IMPORTED_MODULE_1__["default"])();
-    (0,_rowService__WEBPACK_IMPORTED_MODULE_2__["default"])();
-    // reload page when user navigates with browser back/forward buttons
-    window.addEventListener('popstate', () => {
-        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
-    });
-};
-/* harmony default export */ __webpack_exports__["default"] = (bindItemServices);
 
 
 /***/ }),
@@ -7878,6 +7852,52 @@ const bindRowService = () => {
 
 /***/ }),
 
+/***/ "./src/scripts/services/bindItemServices.ts":
+/*!**************************************************!*\
+  !*** ./src/scripts/services/bindItemServices.ts ***!
+  \**************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
+/* harmony import */ var _breadCrumbService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_breadCrumbService */ "./src/scripts/services/_breadCrumbService.ts");
+/* harmony import */ var _rowService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_rowService */ "./src/scripts/services/_rowService.ts");
+
+
+
+const bindItemServices = () => {
+    (0,_breadCrumbService__WEBPACK_IMPORTED_MODULE_1__["default"])();
+    (0,_rowService__WEBPACK_IMPORTED_MODULE_2__["default"])();
+    // reload page when user navigates with browser back/forward buttons
+    window.addEventListener('popstate', () => {
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    });
+};
+/* harmony default export */ __webpack_exports__["default"] = (bindItemServices);
+
+
+/***/ }),
+
+/***/ "./src/scripts/services/bindOneTimeServices.ts":
+/*!*****************************************************!*\
+  !*** ./src/scripts/services/bindOneTimeServices.ts ***!
+  \*****************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _fileService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_fileService */ "./src/scripts/services/_fileService.ts");
+/* harmony import */ var _folderService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_folderService */ "./src/scripts/services/_folderService.ts");
+
+
+const bindOneTimeServices = () => {
+    (0,_fileService__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    (0,_folderService__WEBPACK_IMPORTED_MODULE_1__["default"])();
+};
+/* harmony default export */ __webpack_exports__["default"] = (bindOneTimeServices);
+
+
+/***/ }),
+
 /***/ "./src/scripts/utilities/_helper.ts":
 /*!******************************************!*\
   !*** ./src/scripts/utilities/_helper.ts ***!
@@ -8131,17 +8151,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
 /* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
-/* harmony import */ var _services_fileService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/_fileService */ "./src/scripts/services/_fileService.ts");
-/* harmony import */ var _services_folderService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/_folderService */ "./src/scripts/services/_folderService.ts");
-
+/* harmony import */ var _services_bindOneTimeServices__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/bindOneTimeServices */ "./src/scripts/services/bindOneTimeServices.ts");
 
 
 
 
 (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__["default"])(() => {
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_1__["default"])();
-    (0,_services_fileService__WEBPACK_IMPORTED_MODULE_3__["default"])();
-    (0,_services_folderService__WEBPACK_IMPORTED_MODULE_4__["default"])();
+    (0,_services_bindOneTimeServices__WEBPACK_IMPORTED_MODULE_3__["default"])();
 });
 
 }();

@@ -1,4 +1,4 @@
-import bindItemServices from '../services/_bindItemServices';
+import bindItemServices from '../services/bindItemServices';
 import renderBreadcrumb from './_breadCrumb';
 import renderTableData from './_tableData';
 
