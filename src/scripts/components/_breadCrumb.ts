@@ -1,11 +1,11 @@
-import { getFolderPath } from '../utilities/_helper';
+import { Helper } from '../utilities/_helper';
 
 const renderBreadcrumb = () => {
     const container = document.querySelector('.breadcrumb');
 
     if (!container) return;
 
-    const folderPath = getFolderPath();
+    const folderPath = Helper.getFolderPath();
 
     let accumulatedPath = '';
 

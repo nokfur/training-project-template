@@ -44,7 +44,7 @@
         }
 
         &:has(input[type='checkbox']:checked) .explorer-actions {
-            display: inline-flex !important;
+            visibility: visible !important;
         }
     }
 }

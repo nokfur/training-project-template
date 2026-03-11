@@ -12198,7 +12198,7 @@ textarea.form-control-lg {
   opacity: 1 !important;
 }
 .table-body tr:has(input[type=checkbox]:checked) .explorer-actions {
-  display: inline-flex !important;
+  visibility: visible !important;
 }
 
 @media (max-width: 991.98px) {

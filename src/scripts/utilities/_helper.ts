@@ -11,99 +11,132 @@ const ready = (fn: () => void) => {
 
 export default ready;
 
-export function getFileExtension(filename: string): string {
-    return filename.split('.').pop()?.toLowerCase() ?? '';
-}
+export class Helper {
+    static getFileExtension(filename: string): string {
+        return filename.split('.').pop()?.toLowerCase() ?? '';
+    }
 
-export function getFolderPath(): string[] {
-    const params = new URLSearchParams(window.location.search);
-    const folderPath = params.get('folder');
-
-    if (!folderPath) return [];
-    return folderPath.split('/');
-}
-
-export function getCurrentFolder(root: IFolder): IFolder | null {
-    const folderPath = getFolderPath();
-
-    if (folderPath.length === 0) return root;
-
-    let currentFolder = root;
-    for (const folderName of folderPath) {
-        let found = false;
-        for (const subFolder of currentFolder.subFolders) {
-            if (subFolder.name === folderName) {
-                currentFolder = subFolder;
-                found = true;
-                break;
-            }
+    static getItemById(
+        root: IFolder,
+        id: string,
+    ): IFile | IFolder | null {
+        for (const file of root.files) {
+            if (file.id === id) return file;
         }
 
-        // no matching folder found, return null to indicate invalid path
-        if (!found) return null;
-    }
-    return currentFolder;
-}
-
-function isNameDuplicate(
-    folder: IFolder,
-    name: string,
-    type: 'file' | 'folder',
-): boolean {
-    if (type === 'folder') {
-        return folder.subFolders.some((f) => f.name === name);
+        for (const subFolder of root.subFolders) {
+            if (subFolder.id === id) return subFolder;
+            const foundInSub = this.getItemById(subFolder, id);
+            if (foundInSub) return foundInSub;
+        }
+        return null;
     }
 
-    return folder.files.some((f) => f.name === name);
-}
+    static getFolderPath(): string[] {
+        const params = new URLSearchParams(window.location.search);
+        const folderPath = params.get('folder');
 
-export function getUniqueName(
-    folder: IFolder,
-    baseName: string,
-    type: 'file' | 'folder',
-): string {
-    let name = baseName;
-    let counter = 1;
-
-    while (isNameDuplicate(folder, name, type)) {
-        name = `${baseName} (${counter})`;
-        counter++;
+        if (!folderPath) return [];
+        return folderPath.split('/');
     }
 
-    return name;
-}
+    static getCurrentFolder(root: IFolder): IFolder | null {
+        const folderPath = this.getFolderPath();
 
-export function updateFolderPath(path?: string) {
-    const params = new URLSearchParams(window.location.search);
+        if (folderPath.length === 0) return root;
 
-    if (!path) {
-        params.delete('folder');
-    } else {
-        params.set('folder', path);
+        let currentFolder = root;
+        for (const folderName of folderPath) {
+            let found = false;
+            for (const subFolder of currentFolder.subFolders) {
+                if (subFolder.name === folderName) {
+                    currentFolder = subFolder;
+                    found = true;
+                    break;
+                }
+            }
+
+            // no matching folder found, return null to indicate invalid path
+            if (!found) return null;
+        }
+        return currentFolder;
     }
 
-    history.pushState({}, '', `?${params.toString()}`);
-}
+    private static getUniqueName(
+        existingNames: Set<string>,
+        name: string,
+    ) {
+        let uniqueName = name;
+        let counter = 1;
 
-export const delay = (ms: number) =>
-    new Promise((resolve) => setTimeout(resolve, ms));
+        while (existingNames.has(uniqueName)) {
+            uniqueName = `${name} (${counter})`;
+            counter++;
+        }
 
-export function formatDate(value: string): string {
-    const timestamp = Date.parse(value);
-
-    // if value is not a valid date, return it as is (e.g. "a few seconds ago")
-    if (Number.isNaN(timestamp)) {
-        return value;
+        return uniqueName;
     }
 
-    const date = new Date(timestamp);
+    static getUniqueFileName(
+        parentFolder: IFolder,
+        name: string,
+        id?: string,
+    ) {
+        const existingNames = new Set(
+            parentFolder.files
+                .filter((file) => file.id !== id)
+                .map((file) => file.name),
+        );
 
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const yyyy = date.getFullYear();
+        return this.getUniqueName(existingNames, name);
+    }
 
-    const hh = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
+    static getUniqueFolderName(
+        parentFolder: IFolder,
+        name: string,
+        id?: string,
+    ) {
+        const existingNames = new Set(
+            parentFolder.subFolders
+                .filter((subFolder) => subFolder.id !== id)
+                .map((subFolder) => subFolder.name),
+        );
 
-    return `${mm}/${dd}/${yyyy} ${hh}:${min}`;
+        return this.getUniqueName(existingNames, name);
+    }
+
+    static updateFolderPath(path?: string) {
+        const params = new URLSearchParams(window.location.search);
+
+        if (!path) {
+            params.delete('folder');
+        } else {
+            params.set('folder', path);
+        }
+
+        history.pushState({}, '', `?${params.toString()}`);
+    }
+
+    static delay = (ms: number) =>
+        new Promise((resolve) => setTimeout(resolve, ms));
+
+    static formatDate(value: string): string {
+        const timestamp = Date.parse(value);
+
+        // if value is not a valid date, return it as is (e.g. "a few seconds ago")
+        if (Number.isNaN(timestamp)) {
+            return value;
+        }
+
+        const date = new Date(timestamp);
+
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const yyyy = date.getFullYear();
+
+        const hh = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+
+        return `${mm}/${dd}/${yyyy} ${hh}:${min}`;
+    }
 }

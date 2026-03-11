@@ -1,5 +1,5 @@
 import renderGrid from '../components/_grid';
-import { updateFolderPath } from '../utilities/_helper';
+import { Helper } from '../utilities/_helper';
 
 const bindBreadCrumbService = () => {
     const breadCrumb = document.querySelector('.breadcrumb');
@@ -12,7 +12,7 @@ const bindBreadCrumbService = () => {
         if (!button) return;
 
         const folderPath = button.dataset.folderPath;
-        updateFolderPath(folderPath);
+        Helper.updateFolderPath(folderPath);
         renderGrid();
     });
 };

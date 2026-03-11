@@ -1,38 +1,14 @@
 import IFolder from '../models/IFolder';
-import {
-    formatDate,
-    getCurrentFolder,
-    getUniqueName,
-} from '../utilities/_helper';
-import { loadExplorer, saveExplorer } from '../utilities/_storage';
 import renderGrid from '../components/_grid';
+import { Helper } from '../utilities/_helper';
+import { FolderService } from '../utilities/services/FolderService';
 
 function handleCreateFolder() {
-    const folderName = prompt('Enter folder name:').trim();
+    const folderName = prompt('Enter folder name:');
 
-    if (!folderName) {
-        alert('Folder name cannot be empty.');
-        return;
-    }
+    FolderService.create(folderName);
 
-    const explorer = loadExplorer();
-    const parentFolder = getCurrentFolder(explorer);
-
-    if (parentFolder) {
-        const newFolder: IFolder = {
-            id: crypto.randomUUID(),
-            name: getUniqueName(parentFolder, folderName, 'folder'),
-            modified: formatDate(new Date().toISOString()),
-            modifiedBy: 'Administrator MOD',
-            files: [],
-            subFolders: [],
-        };
-
-        parentFolder.subFolders.push(newFolder);
-        saveExplorer(explorer);
-
-        renderGrid();
-    }
+    renderGrid();
 }
 
 const bindFolderService = () => {

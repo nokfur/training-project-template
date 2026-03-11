@@ -4,7 +4,6 @@ import 'bootstrap';
 import bindOneTimeServices from '../services/bindOneTimeServices';
 
 ready(() => {
-    renderGrid();
-
     bindOneTimeServices();
+    renderGrid();
 });

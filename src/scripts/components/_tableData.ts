@@ -2,7 +2,7 @@ import { ExplorerItemType } from '../models/ExplorerItemType';
 import { FileExtension } from '../models/FileExtension';
 import IFile from '../models/IFile';
 import IFolder from '../models/IFolder';
-import { delay, getCurrentFolder } from '../utilities/_helper';
+import { Helper } from '../utilities/_helper';
 import { loadExplorer } from '../utilities/_storage';
 
 function getItemIcon(
@@ -38,7 +38,7 @@ function renderRow(
     data: IFile | IFolder,
     type: ExplorerItemType,
 ): string {
-    return `<tr class="table-row">
+    return `<tr class="table-row ">
                 <td class="align-middle">
                     <div class="d-flex justify-content-center">
                         <input class="form-check-input opacity-0" type="checkbox">
@@ -53,21 +53,21 @@ function renderRow(
                     ${renderItemName(data.name, type === 'file')}
                 </td>
                 <td data-label="Modified" class="text-secondary align-middle">
-                    ${data.modified}
+                    ${Helper.formatDate(data.modified)}
                 </td>
                 <td data-label="Modified By" class="text-secondary align-middle">
                     ${data.modifiedBy}
                 </td>
                 <td class="align-middle">
                     <div class="d-flex justify-content-end">
-                        <div class="explorer-actions d-none gap-2">
+                        <div class="explorer-actions d-inline-flex invisible gap-2">
                             <button class="btn btn-sm d-flex align-items-center btn-item-update" 
-                                    data-item-name="${data.name}" data-item-type="${type}">
+                                    data-item-id="${data.id}" data-item-type="${type}">
                                 <iconify-icon icon="mi:pen" class="fs-5 text-success">
                                 </iconify-icon>
                             </button>
                             <button class="btn btn-sm d-flex align-items-center btn-item-delete" 
-                                    data-item-name="${data.name}" data-item-type="${type}">
+                                    data-item-id="${data.id}" data-item-type="${type}">
                                 <iconify-icon icon="si:bin-line" class="fs-5 text-danger">
                                 </iconify-icon>
                             </button>
@@ -92,7 +92,7 @@ function renderCustomRowMessage(content: string): string {
 
 const renderTableData = async () => {
     const explorer = loadExplorer();
-    const data = getCurrentFolder(explorer);
+    const data = Helper.getCurrentFolder(explorer);
 
     const tableBody = document.querySelector('.table-body');
     if (!tableBody) return;
@@ -105,7 +105,7 @@ const renderTableData = async () => {
     `);
 
     // mock loading time
-    await delay(1000);
+    await Helper.delay(1000);
 
     if (data === null) {
         tableBody.innerHTML = renderCustomRowMessage(

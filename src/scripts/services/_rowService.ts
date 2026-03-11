@@ -1,112 +1,46 @@
 import renderGrid from '../components/_grid';
 import { ExplorerItemType } from '../models/ExplorerItemType';
-import { FILE_EXTENSIONS } from '../models/FileExtension';
-import {
-    getCurrentFolder,
-    getUniqueName,
-    updateFolderPath,
-} from '../utilities/_helper';
-import { loadExplorer, saveExplorer } from '../utilities/_storage';
+import { Helper } from '../utilities/_helper';
+import { FileService } from '../utilities/services/FileService';
+import { FolderService } from '../utilities/services/FolderService';
+import { StorageService } from '../utilities/services/StorageService';
 
 function handleRename(
-    selectedItemName: string,
+    selectedItemId: string,
     itemType: ExplorerItemType,
 ) {
-    let newName = prompt(
-        `Enter new ${itemType} name:`,
-        selectedItemName,
-    ).trim();
+    const item = Helper.getItemById(
+        StorageService.loadExplorer(),
+        selectedItemId,
+    );
 
-    if (!newName || newName === selectedItemName) return;
+    const newName = prompt(`Enter new ${itemType} name:`, item.name);
 
-    const explorer = loadExplorer();
-    const currentFolder = getCurrentFolder(explorer);
-    if (!currentFolder) return;
+    if (itemType === 'folder')
+        FolderService.update(selectedItemId, newName);
+    else if (itemType === 'file')
+        FileService.update(selectedItemId, newName);
 
-    if (itemType === 'folder') {
-        const folder = currentFolder.subFolders.find(
-            (f) => f.name === selectedItemName,
-        );
-
-        if (folder)
-            folder.name = getUniqueName(
-                currentFolder,
-                newName,
-                'folder',
-            );
-    }
-
-    if (itemType === 'file') {
-        const file = currentFolder.files.find(
-            (f) => f.name === selectedItemName,
-        );
-
-        let newExt = file.extension;
-
-        // if user changes file extension, validate it
-        if (newName.includes('.')) {
-            const parts = newName.split('.');
-            const ext = parts[parts.length - 1];
-            if (!FILE_EXTENSIONS.includes(ext)) {
-                alert(
-                    `Unsupported file type. Only ${FILE_EXTENSIONS.join(', ')} allowed.`,
-                );
-                return;
-            }
-
-            newExt = ext;
-        } else newName += `.${file.extension}`; // keep old extension if user not input extension part
-
-        if (newName === selectedItemName) return;
-
-        file.name = getUniqueName(currentFolder, newName, 'file');
-        file.extension = newExt;
-    }
-
-    saveExplorer(explorer);
     renderGrid();
 }
 
 function handleDelete(
-    selectedItemName: string,
+    selectedItemId: string,
     itemType: ExplorerItemType,
 ) {
+    const item = Helper.getItemById(
+        StorageService.loadExplorer(),
+        selectedItemId,
+    );
     const confirmed = confirm(
-        `Are you sure you want to delete the ${itemType} "${selectedItemName}"?`,
+        `Are you sure you want to delete the ${itemType} "${item.name}"?`,
     );
 
     if (!confirmed) return;
 
-    const explorer = loadExplorer();
-    const currentFolder = getCurrentFolder(explorer);
+    if (itemType === 'folder') FolderService.delete(selectedItemId);
+    else if (itemType === 'file') FileService.delete(selectedItemId);
 
-    if (!currentFolder) return;
-
-    if (itemType === 'folder') {
-        currentFolder.subFolders = currentFolder.subFolders.filter(
-            (folder) => folder.name !== selectedItemName,
-        );
-    } else {
-        currentFolder.files = currentFolder.files.filter(
-            (file) => file.name !== selectedItemName,
-        );
-    }
-
-    saveExplorer(explorer);
-    renderGrid();
-}
-
-function handleFolderNavigation(folderName: string) {
-    if (!folderName) return;
-
-    const params = new URLSearchParams(window.location.search);
-    let currentPath = params.get('folder');
-
-    const newPath = currentPath
-        ? `${currentPath}/${folderName}`
-        : folderName;
-
-    updateFolderPath(newPath);
     renderGrid();
 }
 
@@ -149,7 +83,9 @@ const bindRowService = () => {
             e.stopPropagation();
 
             const folderName = item.getAttribute('data-folder-name');
-            handleFolderNavigation(folderName);
+            FolderService.navigateTo(folderName);
+
+            renderGrid();
         });
     });
 
@@ -157,11 +93,12 @@ const bindRowService = () => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
 
-            const itemName = btn.getAttribute('data-item-name');
+            const itemId = btn.getAttribute('data-item-id');
             const itemType = btn.getAttribute(
                 'data-item-type',
             ) as ExplorerItemType;
-            handleRename(itemName, itemType);
+
+            handleRename(itemId, itemType);
         });
     });
 
@@ -169,11 +106,12 @@ const bindRowService = () => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
 
-            const itemName = btn.getAttribute('data-item-name');
+            const itemId = btn.getAttribute('data-item-id');
             const itemType = btn.getAttribute(
                 'data-item-type',
             ) as ExplorerItemType;
-            handleDelete(itemName, itemType);
+
+            handleDelete(itemId, itemType);
         });
     });
 };
