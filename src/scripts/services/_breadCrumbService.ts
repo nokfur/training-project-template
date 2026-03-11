@@ -1,8 +1,10 @@
 import renderGrid from '../components/_grid';
 import { updateFolderPath } from '../utilities/_helper';
 
-const bindBreadCrumbService = (breadCrumbElement: Element) => {
-    breadCrumbElement?.addEventListener('click', (e) => {
+const bindBreadCrumbService = () => {
+    const breadCrumb = document.querySelector('.breadcrumb');
+
+    breadCrumb?.addEventListener('click', (e) => {
         const button = (
             e.target as HTMLElement
         ).closest<HTMLButtonElement>('[data-folder-path]');

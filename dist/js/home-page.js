@@ -7406,118 +7406,20 @@ defineJQueryPlugin(Toast);
 
 /***/ }),
 
-/***/ "./src/scripts/components/_grid.ts":
-/*!*****************************************!*\
-  !*** ./src/scripts/components/_grid.ts ***!
-  \*****************************************/
+/***/ "./src/scripts/components/_breadCrumb.ts":
+/*!***********************************************!*\
+  !*** ./src/scripts/components/_breadCrumb.ts ***!
+  \***********************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utilities_storage__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_storage */ "./src/scripts/utilities/_storage.ts");
-/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
+/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
 
-
-function getItemIcon(data, type) {
-    const itemIconMap = {
-        folder: 'glyphs:folder-duo',
-        xlsx: 'vscode-icons:file-type-excel',
-        docs: 'vscode-icons:file-type-word',
-        pptx: 'vscode-icons:file-type-powerpoint2',
-    };
-    if (type === 'folder') {
-        return itemIconMap[type];
-    }
-    return itemIconMap[data.extension];
-}
-function renderRow(data, type) {
-    return `<tr data-item-name="${data.name}" data-item-type="${type}">
-                <td class="align-middle">
-                    <div class="d-flex justify-content-center">
-                        <input class="form-check-input opacity-0" type="checkbox" value="${data.name}">
-                    </div>
-                </td>
-                <td class="align-middle" data-label="File Type">
-                    <div class="d-flex align-items-center justify-content-end">
-                        <iconify-icon icon="${getItemIcon(data, type)}" class="fs-4"></iconify-icon>
-                    </div>
-                </td>
-                <td class="align-middle" data-label="Name">
-                    ${
-    // show glimmer if the item is a file
-    type === 'file'
-        ? `<div class="position-relative d-inline-block explorer-item">
-                                <iconify-icon icon="tabler:loader-quarter" class="fs-5 text-pink position-absolute -top-1 -left-2">
-                                </iconify-icon>
-
-                                ${data.name}
-                            </div>`
-        : `<span class="explorer-item">${data.name}</span>`}
-                </td>
-                <td data-label="Modified" class="text-secondary align-middle">
-                    ${data.modified}
-                </td>
-                <td data-label="Modified By" class="text-secondary align-middle">
-                    ${data.modifiedBy}
-                </td>
-                <td class="align-middle">
-                    <div class="d-flex justify-content-end">
-                        <div class="explorer-actions d-none gap-2">
-                            <button class="btn btn-sm d-flex align-items-center" data-action="update">
-                                <iconify-icon icon="mi:pen" class="fs-5 text-success">
-                                </iconify-icon>
-                            </button>
-                            <button class="btn btn-sm d-flex align-items-center" data-action="delete">
-                                <iconify-icon icon="si:bin-line" class="fs-5 text-danger">
-                                </iconify-icon>
-                            </button>
-                        </div>
-                    </div>
-                </td>
-            </tr>`;
-}
-function renderCustomTableMessage(content) {
-    const colCount = document.querySelectorAll('thead th').length || 6;
-    return `<tr>
-                <td colspan="${colCount}">
-                    <div class="d-flex justify-content-center align-items-center my-4">
-                        ${content}
-                    </div>
-                </td>
-            </tr>`;
-}
-function renderTableData() {
-    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_0__.loadExplorer)();
-    const data = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_1__.getCurrentFolder)(explorer);
-    const tableBody = document.querySelector('.table-body');
-    if (!tableBody)
-        return;
-    // mock loading state with spinner
-    tableBody.innerHTML = renderCustomTableMessage(`
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    `);
-    // mock loading state
-    setTimeout(() => {
-        if (data === null) {
-            tableBody.innerHTML = renderCustomTableMessage(`<span>Folder not found</span>`);
-            return;
-        }
-        if (data.files.length === 0 && data.subFolders.length === 0) {
-            tableBody.innerHTML = renderCustomTableMessage(`<span>This folder is empty</span>`);
-            return;
-        }
-        tableBody.innerHTML = [
-            ...data.subFolders.map((data) => renderRow(data, 'folder')),
-            ...data.files.map((data) => renderRow(data, 'file')),
-        ].join('');
-    }, 1000);
-}
-function renderBreadcrumb() {
+const renderBreadcrumb = () => {
     const container = document.querySelector('.breadcrumb');
     if (!container)
         return;
-    const folderPath = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_1__.getFolderPath)();
+    const folderPath = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getFolderPath)();
     let accumulatedPath = '';
     let html = `<li class="breadcrumb-item fs-3">
                     <button class="btn fs-3 border-0" data-folder-path="">Documents</button>
@@ -7532,13 +7434,147 @@ function renderBreadcrumb() {
     })
         .join('');
     container.innerHTML = html;
-}
-const renderGrid = () => {
+};
+/* harmony default export */ __webpack_exports__["default"] = (renderBreadcrumb);
+
+
+/***/ }),
+
+/***/ "./src/scripts/components/_grid.ts":
+/*!*****************************************!*\
+  !*** ./src/scripts/components/_grid.ts ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _services_bindServices__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/bindServices */ "./src/scripts/services/bindServices.ts");
+/* harmony import */ var _breadCrumb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_breadCrumb */ "./src/scripts/components/_breadCrumb.ts");
+/* harmony import */ var _tableData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_tableData */ "./src/scripts/components/_tableData.ts");
+
+
+
+const renderGrid = async () => {
     // TODO: implement code to Render grid
-    renderTableData();
-    renderBreadcrumb();
+    await (0,_tableData__WEBPACK_IMPORTED_MODULE_2__["default"])();
+    (0,_breadCrumb__WEBPACK_IMPORTED_MODULE_1__["default"])();
+    // init event listeners
+    (0,_services_bindServices__WEBPACK_IMPORTED_MODULE_0__["default"])();
 };
 /* harmony default export */ __webpack_exports__["default"] = (renderGrid);
+
+
+/***/ }),
+
+/***/ "./src/scripts/components/_tableData.ts":
+/*!**********************************************!*\
+  !*** ./src/scripts/components/_tableData.ts ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
+/* harmony import */ var _utilities_storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/_storage */ "./src/scripts/utilities/_storage.ts");
+
+
+function getItemIcon(data, type) {
+    const itemIconMap = {
+        folder: 'glyphs:folder-duo',
+        xlsx: 'vscode-icons:file-type-excel',
+        docs: 'vscode-icons:file-type-word',
+        pptx: 'vscode-icons:file-type-powerpoint2',
+    };
+    if (type === 'folder') {
+        return itemIconMap[type];
+    }
+    return itemIconMap[data.extension];
+}
+function renderItemName(itemName, isFile) {
+    return isFile
+        ? `<div class="position-relative d-inline-block explorer-item">
+                <iconify-icon icon="tabler:loader-quarter" class="fs-5 text-pink position-absolute -top-1 -left-2">
+                </iconify-icon>
+
+                ${itemName}
+            </div>`
+        : `<div class="d-inline-block explorer-item" data-folder-name="${itemName}">${itemName}</div>`;
+}
+function renderRow(data, type) {
+    return `<tr data-item-name="${data.name}" data-item-type="${type}">
+                <td class="align-middle">
+                    <div class="d-flex justify-content-center">
+                        <input class="form-check-input opacity-0" type="checkbox" value="${data.name}">
+                    </div>
+                </td>
+                <td class="align-middle" data-label="File Type">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <iconify-icon icon="${getItemIcon(data, type)}" class="fs-4"></iconify-icon>
+                    </div>
+                </td>
+                <td class="align-middle" data-label="Name">
+                    ${renderItemName(data.name, type === 'file')}
+                </td>
+                <td data-label="Modified" class="text-secondary align-middle">
+                    ${data.modified}
+                </td>
+                <td data-label="Modified By" class="text-secondary align-middle">
+                    ${data.modifiedBy}
+                </td>
+                <td class="align-middle">
+                    <div class="d-flex justify-content-end">
+                        <div class="explorer-actions d-none gap-2">
+                            <button class="btn btn-sm d-flex align-items-center btn-item-update" 
+                                    data-item-name="${data.name}" data-item-type="${type}">
+                                <iconify-icon icon="mi:pen" class="fs-5 text-success">
+                                </iconify-icon>
+                            </button>
+                            <button class="btn btn-sm d-flex align-items-center btn-item-delete" 
+                                    data-item-name="${data.name}" data-item-type="${type}">
+                                <iconify-icon icon="si:bin-line" class="fs-5 text-danger">
+                                </iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+}
+function renderCustomRowMessage(content) {
+    const colCount = document.querySelectorAll('thead th').length || 6;
+    return `<tr>
+                <td colspan="${colCount}">
+                    <div class="d-flex justify-content-center align-items-center my-4">
+                        ${content}
+                    </div>
+                </td>
+            </tr>`;
+}
+const renderTableData = async () => {
+    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_1__.loadExplorer)();
+    const data = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getCurrentFolder)(explorer);
+    const tableBody = document.querySelector('.table-body');
+    if (!tableBody)
+        return;
+    // mock loading state with spinner
+    tableBody.innerHTML = renderCustomRowMessage(`
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    `);
+    // mock loading time
+    await (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.delay)(1000);
+    if (data === null) {
+        tableBody.innerHTML = renderCustomRowMessage(`<span>Folder not found</span>`);
+        return;
+    }
+    if (data.files.length === 0 && data.subFolders.length === 0) {
+        tableBody.innerHTML = renderCustomRowMessage(`<span>This folder is empty</span>`);
+        return;
+    }
+    tableBody.innerHTML = [
+        ...data.subFolders.map((data) => renderRow(data, 'folder')),
+        ...data.files.map((data) => renderRow(data, 'file')),
+    ].join('');
+};
+/* harmony default export */ __webpack_exports__["default"] = (renderTableData);
 
 
 /***/ }),
@@ -7558,42 +7594,6 @@ const FILE_EXTENSIONS = ["xlsx", "docs", "pptx"];
 
 /***/ }),
 
-/***/ "./src/scripts/pages/_init.ts":
-/*!************************************!*\
-  !*** ./src/scripts/pages/_init.ts ***!
-  \************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
-/* harmony import */ var _services_fileService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/_fileService */ "./src/scripts/services/_fileService.ts");
-/* harmony import */ var _services_folderService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/_folderService */ "./src/scripts/services/_folderService.ts");
-/* harmony import */ var _services_breadCrumbService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/_breadCrumbService */ "./src/scripts/services/_breadCrumbService.ts");
-/* harmony import */ var _services_rowService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/_rowService */ "./src/scripts/services/_rowService.ts");
-
-
-
-
-
-const initialize = () => {
-    const uploadBtn = document.querySelector('#fileUploadBtn');
-    const newFolderBtn = document.querySelector('#newFolderBtn');
-    const tableBody = document.querySelector('.table-body');
-    const breadCrumb = document.querySelector('.breadcrumb');
-    (0,_services_fileService__WEBPACK_IMPORTED_MODULE_1__["default"])(uploadBtn);
-    (0,_services_folderService__WEBPACK_IMPORTED_MODULE_2__["default"])(newFolderBtn);
-    (0,_services_breadCrumbService__WEBPACK_IMPORTED_MODULE_3__["default"])(breadCrumb);
-    (0,_services_rowService__WEBPACK_IMPORTED_MODULE_4__["default"])(tableBody);
-    // reload page when user navigates with browser back/forward buttons
-    window.addEventListener('popstate', () => {
-        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
-    });
-};
-/* harmony default export */ __webpack_exports__["default"] = (initialize);
-
-
-/***/ }),
-
 /***/ "./src/scripts/services/_breadCrumbService.ts":
 /*!****************************************************!*\
   !*** ./src/scripts/services/_breadCrumbService.ts ***!
@@ -7605,8 +7605,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
 
 
-const bindBreadCrumbService = (breadCrumbElement) => {
-    breadCrumbElement?.addEventListener('click', (e) => {
+const bindBreadCrumbService = () => {
+    const breadCrumb = document.querySelector('.breadcrumb');
+    breadCrumb?.addEventListener('click', (e) => {
         const button = e.target.closest('[data-folder-path]');
         if (!button)
             return;
@@ -7667,7 +7668,8 @@ function handleUpload(e) {
     // reset file input to allow uploading same file again if needed
     input.value = '';
 }
-const bindFileService = (uploadBtn) => {
+const bindFileService = () => {
+    const uploadBtn = document.querySelector('#fileUploadBtn');
     uploadBtn?.addEventListener('change', handleUpload);
 };
 /* harmony default export */ __webpack_exports__["default"] = (bindFileService);
@@ -7710,7 +7712,8 @@ function handleCreateFolder() {
         (0,_components_grid__WEBPACK_IMPORTED_MODULE_2__["default"])();
     }
 }
-const bindFolderService = (createFolderBtn) => {
+const bindFolderService = () => {
+    const createFolderBtn = document.querySelector('#newFolderBtn');
     createFolderBtn?.addEventListener('click', () => {
         handleCreateFolder();
     });
@@ -7788,34 +7791,16 @@ function handleDelete(selectedItemName, itemType) {
     (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_3__.saveExplorer)(explorer);
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
 }
-function handleRowAction(target, row) {
-    const btn = target.closest('[data-action]');
-    if (!btn)
-        return false;
-    const action = btn.dataset.action;
-    const selectedItemName = row.dataset.itemName;
-    const itemType = row.dataset.itemType;
-    if (action === 'update')
-        handleRename(selectedItemName, itemType);
-    if (action === 'delete')
-        handleDelete(selectedItemName, itemType);
-    return true;
-}
-function handleFolderNavigation(target, row) {
-    if (!target.closest('.explorer-item'))
-        return false;
-    const itemName = row.dataset.itemName;
-    const itemType = row.dataset.itemType;
-    if (itemType !== 'folder')
-        return true;
+function handleFolderNavigation(folderName) {
+    if (!folderName)
+        return;
     const params = new URLSearchParams(window.location.search);
     let currentPath = params.get('folder');
     const newPath = currentPath
-        ? `${currentPath}/${itemName}`
-        : itemName;
+        ? `${currentPath}/${folderName}`
+        : folderName;
     (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_2__.updateFolderPath)(newPath);
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
-    return true;
 }
 function toggleRowSelection(row, tableBody) {
     const checkbox = row.querySelector('input[type="checkbox"]');
@@ -7827,20 +7812,82 @@ function toggleRowSelection(row, tableBody) {
         .forEach((cb) => (cb.checked = false));
     checkbox.checked = !checked;
 }
-const bindRowService = (tableBody) => {
-    tableBody.addEventListener('click', (e) => {
-        const target = e.target;
-        const row = target.closest('tr');
-        if (!row)
-            return;
-        if (handleRowAction(target, row))
-            return;
-        if (handleFolderNavigation(target, row))
-            return;
-        toggleRowSelection(row, tableBody);
+function handleTableClick(e) {
+    const target = e.target;
+    const row = target.closest('tr');
+    if (!row)
+        return;
+    const tableBody = row.closest('.table-body');
+    if (!tableBody)
+        return;
+    toggleRowSelection(row, tableBody);
+}
+const bindRowService = () => {
+    const tableBody = document.querySelector('.table-body');
+    const explorerItems = document.querySelectorAll('.explorer-item');
+    const updateButtons = document.querySelectorAll('.btn-item-update');
+    const deleteButtons = document.querySelectorAll('.btn-item-delete');
+    // renderGrid called many times will cause multiple event listeners binding,
+    // so we need to remove old event listener before adding new one
+    tableBody.removeEventListener('click', handleTableClick);
+    tableBody.addEventListener('click', handleTableClick);
+    explorerItems.forEach((item) => {
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const folderName = item.getAttribute('data-folder-name');
+            handleFolderNavigation(folderName);
+        });
+    });
+    updateButtons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const itemName = btn.getAttribute('data-item-name');
+            const itemType = btn.getAttribute('data-item-type');
+            handleRename(itemName, itemType);
+        });
+    });
+    deleteButtons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const itemName = btn.getAttribute('data-item-name');
+            const itemType = btn.getAttribute('data-item-type');
+            handleDelete(itemName, itemType);
+        });
     });
 };
 /* harmony default export */ __webpack_exports__["default"] = (bindRowService);
+
+
+/***/ }),
+
+/***/ "./src/scripts/services/bindServices.ts":
+/*!**********************************************!*\
+  !*** ./src/scripts/services/bindServices.ts ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
+/* harmony import */ var _fileService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_fileService */ "./src/scripts/services/_fileService.ts");
+/* harmony import */ var _folderService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_folderService */ "./src/scripts/services/_folderService.ts");
+/* harmony import */ var _breadCrumbService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_breadCrumbService */ "./src/scripts/services/_breadCrumbService.ts");
+/* harmony import */ var _rowService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./_rowService */ "./src/scripts/services/_rowService.ts");
+
+
+
+
+
+const bindServices = () => {
+    (0,_fileService__WEBPACK_IMPORTED_MODULE_1__["default"])();
+    (0,_folderService__WEBPACK_IMPORTED_MODULE_2__["default"])();
+    (0,_breadCrumbService__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    (0,_rowService__WEBPACK_IMPORTED_MODULE_4__["default"])();
+    // reload page when user navigates with browser back/forward buttons
+    window.addEventListener('popstate', () => {
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    });
+};
+/* harmony default export */ __webpack_exports__["default"] = (bindServices);
 
 
 /***/ }),
@@ -7853,6 +7900,7 @@ const bindRowService = (tableBody) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   delay: function() { return /* binding */ delay; },
 /* harmony export */   formatDate: function() { return /* binding */ formatDate; },
 /* harmony export */   getCurrentFolder: function() { return /* binding */ getCurrentFolder; },
 /* harmony export */   getFileExtension: function() { return /* binding */ getFileExtension; },
@@ -7924,6 +7972,7 @@ function updateFolderPath(path) {
     }
     history.pushState({}, '', `?${params.toString()}`);
 }
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 function formatDate(value) {
     const timestamp = Date.parse(value);
     // if value is not a valid date, return it as is (e.g. "a few seconds ago")
@@ -8096,14 +8145,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
 /* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
-/* harmony import */ var _init__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_init */ "./src/scripts/pages/_init.ts");
-
 
 
 
 (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__["default"])(() => {
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_1__["default"])();
-    (0,_init__WEBPACK_IMPORTED_MODULE_3__["default"])();
 });
 
 }();

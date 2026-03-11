@@ -96,44 +96,18 @@ function handleDelete(
     renderGrid();
 }
 
-function handleRowAction(
-    target: HTMLElement,
-    row: HTMLTableRowElement,
-) {
-    const btn = target.closest<HTMLButtonElement>('[data-action]');
-    if (!btn) return false;
-
-    const action = btn.dataset.action;
-    const selectedItemName = row.dataset.itemName;
-    const itemType = row.dataset.itemType as ExplorerItemType;
-
-    if (action === 'update') handleRename(selectedItemName, itemType);
-    if (action === 'delete') handleDelete(selectedItemName, itemType);
-
-    return true;
-}
-
-function handleFolderNavigation(
-    target: HTMLElement,
-    row: HTMLTableRowElement,
-) {
-    if (!target.closest('.explorer-item')) return false;
-
-    const itemName = row.dataset.itemName;
-    const itemType = row.dataset.itemType as ExplorerItemType;
-    if (itemType !== 'folder') return true;
+function handleFolderNavigation(folderName: string) {
+    if (!folderName) return;
 
     const params = new URLSearchParams(window.location.search);
     let currentPath = params.get('folder');
 
     const newPath = currentPath
-        ? `${currentPath}/${itemName}`
-        : itemName;
+        ? `${currentPath}/${folderName}`
+        : folderName;
 
     updateFolderPath(newPath);
     renderGrid();
-
-    return true;
 }
 
 function toggleRowSelection(
@@ -154,16 +128,64 @@ function toggleRowSelection(
     checkbox.checked = !checked;
 }
 
-const bindRowService = (tableBody: Element) => {
-    tableBody.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        const row = target.closest<HTMLTableRowElement>('tr');
-        if (!row) return;
+function handleTableClick(e: Event) {
+    const target = e.target as HTMLElement;
 
-        if (handleRowAction(target, row)) return;
-        if (handleFolderNavigation(target, row)) return;
+    const row = target.closest<HTMLTableRowElement>('tr');
+    if (!row) return;
 
-        toggleRowSelection(row, tableBody);
+    const tableBody = row.closest('.table-body');
+    if (!tableBody) return;
+
+    toggleRowSelection(row, tableBody);
+}
+
+const bindRowService = () => {
+    const tableBody = document.querySelector('.table-body');
+    const explorerItems = document.querySelectorAll('.explorer-item');
+    const updateButtons = document.querySelectorAll(
+        '.btn-item-update',
+    );
+    const deleteButtons = document.querySelectorAll(
+        '.btn-item-delete',
+    );
+
+    // renderGrid called many times will cause multiple event listeners binding,
+    // so we need to remove old event listener before adding new one
+    tableBody.removeEventListener('click', handleTableClick);
+    tableBody.addEventListener('click', handleTableClick);
+
+    explorerItems.forEach((item) => {
+        item.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            const folderName = item.getAttribute('data-folder-name');
+            handleFolderNavigation(folderName);
+        });
+    });
+
+    updateButtons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            const itemName = btn.getAttribute('data-item-name');
+            const itemType = btn.getAttribute(
+                'data-item-type',
+            ) as ExplorerItemType;
+            handleRename(itemName, itemType);
+        });
+    });
+
+    deleteButtons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            const itemName = btn.getAttribute('data-item-name');
+            const itemType = btn.getAttribute(
+                'data-item-type',
+            ) as ExplorerItemType;
+            handleDelete(itemName, itemType);
+        });
     });
 };
 

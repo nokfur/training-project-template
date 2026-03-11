@@ -52,7 +52,9 @@ function handleUpload(e: Event) {
     input.value = '';
 }
 
-const bindFileService = (uploadBtn: Element) => {
+const bindFileService = () => {
+    const uploadBtn = document.querySelector('#fileUploadBtn');
+
     uploadBtn?.addEventListener('change', handleUpload);
 };
 

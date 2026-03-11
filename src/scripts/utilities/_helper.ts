@@ -85,6 +85,9 @@ export function updateFolderPath(path?: string) {
     history.pushState({}, '', `?${params.toString()}`);
 }
 
+export const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
 export function formatDate(value: string): string {
     const timestamp = Date.parse(value);
 

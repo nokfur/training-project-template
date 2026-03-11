@@ -35,7 +35,9 @@ function handleCreateFolder() {
     }
 }
 
-const bindFolderService = (createFolderBtn: Element) => {
+const bindFolderService = () => {
+    const createFolderBtn = document.querySelector('#newFolderBtn');
+
     createFolderBtn?.addEventListener('click', () => {
         handleCreateFolder();
     });
