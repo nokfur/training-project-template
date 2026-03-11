@@ -38,10 +38,10 @@ function renderRow(
     data: IFile | IFolder,
     type: ExplorerItemType,
 ): string {
-    return `<tr data-item-name="${data.name}" data-item-type="${type}">
+    return `<tr class="table-row">
                 <td class="align-middle">
                     <div class="d-flex justify-content-center">
-                        <input class="form-check-input opacity-0" type="checkbox" value="${data.name}">
+                        <input class="form-check-input opacity-0" type="checkbox">
                     </div>
                 </td>
                 <td class="align-middle" data-label="File Type">

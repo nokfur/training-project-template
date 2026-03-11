@@ -7447,7 +7447,7 @@ const renderBreadcrumb = () => {
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _services_bindServices__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/bindServices */ "./src/scripts/services/bindServices.ts");
+/* harmony import */ var _services_bindItemServices__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/_bindItemServices */ "./src/scripts/services/_bindItemServices.ts");
 /* harmony import */ var _breadCrumb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_breadCrumb */ "./src/scripts/components/_breadCrumb.ts");
 /* harmony import */ var _tableData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_tableData */ "./src/scripts/components/_tableData.ts");
 
@@ -7458,7 +7458,7 @@ const renderGrid = async () => {
     await (0,_tableData__WEBPACK_IMPORTED_MODULE_2__["default"])();
     (0,_breadCrumb__WEBPACK_IMPORTED_MODULE_1__["default"])();
     // init event listeners
-    (0,_services_bindServices__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    (0,_services_bindItemServices__WEBPACK_IMPORTED_MODULE_0__["default"])();
 };
 /* harmony default export */ __webpack_exports__["default"] = (renderGrid);
 
@@ -7499,10 +7499,10 @@ function renderItemName(itemName, isFile) {
         : `<div class="d-inline-block explorer-item" data-folder-name="${itemName}">${itemName}</div>`;
 }
 function renderRow(data, type) {
-    return `<tr data-item-name="${data.name}" data-item-type="${type}">
+    return `<tr class="table-row">
                 <td class="align-middle">
                     <div class="d-flex justify-content-center">
-                        <input class="form-check-input opacity-0" type="checkbox" value="${data.name}">
+                        <input class="form-check-input opacity-0" type="checkbox">
                     </div>
                 </td>
                 <td class="align-middle" data-label="File Type">
@@ -7590,6 +7590,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FILE_EXTENSIONS: function() { return /* binding */ FILE_EXTENSIONS; }
 /* harmony export */ });
 const FILE_EXTENSIONS = ["xlsx", "docs", "pptx"];
+
+
+/***/ }),
+
+/***/ "./src/scripts/services/_bindItemServices.ts":
+/*!***************************************************!*\
+  !*** ./src/scripts/services/_bindItemServices.ts ***!
+  \***************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
+/* harmony import */ var _breadCrumbService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_breadCrumbService */ "./src/scripts/services/_breadCrumbService.ts");
+/* harmony import */ var _rowService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_rowService */ "./src/scripts/services/_rowService.ts");
+
+
+
+const bindItemServices = () => {
+    (0,_breadCrumbService__WEBPACK_IMPORTED_MODULE_1__["default"])();
+    (0,_rowService__WEBPACK_IMPORTED_MODULE_2__["default"])();
+    // reload page when user navigates with browser back/forward buttons
+    window.addEventListener('popstate', () => {
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    });
+};
+/* harmony default export */ __webpack_exports__["default"] = (bindItemServices);
 
 
 /***/ }),
@@ -7802,35 +7828,27 @@ function handleFolderNavigation(folderName) {
     (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_2__.updateFolderPath)(newPath);
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
 }
-function toggleRowSelection(row, tableBody) {
+function toggleRowSelection(row) {
     const checkbox = row.querySelector('input[type="checkbox"]');
-    if (!checkbox)
+    const checkboxes = row
+        .closest('.table-body')
+        ?.querySelectorAll('input[type="checkbox"]');
+    if (checkboxes.length === 0)
         return;
     const checked = checkbox.checked;
-    tableBody
-        ?.querySelectorAll('input[type="checkbox"]')
-        .forEach((cb) => (cb.checked = false));
+    checkboxes.forEach((cb) => (cb.checked = false));
     checkbox.checked = !checked;
 }
-function handleTableClick(e) {
-    const target = e.target;
-    const row = target.closest('tr');
-    if (!row)
-        return;
-    const tableBody = row.closest('.table-body');
-    if (!tableBody)
-        return;
-    toggleRowSelection(row, tableBody);
-}
 const bindRowService = () => {
-    const tableBody = document.querySelector('.table-body');
+    const tableRows = document.querySelectorAll('.table-row');
     const explorerItems = document.querySelectorAll('.explorer-item');
     const updateButtons = document.querySelectorAll('.btn-item-update');
     const deleteButtons = document.querySelectorAll('.btn-item-delete');
-    // renderGrid called many times will cause multiple event listeners binding,
-    // so we need to remove old event listener before adding new one
-    tableBody.removeEventListener('click', handleTableClick);
-    tableBody.addEventListener('click', handleTableClick);
+    tableRows.forEach((row) => {
+        row.addEventListener('click', (e) => {
+            toggleRowSelection(row);
+        });
+    });
     explorerItems.forEach((item) => {
         item.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -7856,38 +7874,6 @@ const bindRowService = () => {
     });
 };
 /* harmony default export */ __webpack_exports__["default"] = (bindRowService);
-
-
-/***/ }),
-
-/***/ "./src/scripts/services/bindServices.ts":
-/*!**********************************************!*\
-  !*** ./src/scripts/services/bindServices.ts ***!
-  \**********************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
-/* harmony import */ var _fileService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_fileService */ "./src/scripts/services/_fileService.ts");
-/* harmony import */ var _folderService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_folderService */ "./src/scripts/services/_folderService.ts");
-/* harmony import */ var _breadCrumbService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_breadCrumbService */ "./src/scripts/services/_breadCrumbService.ts");
-/* harmony import */ var _rowService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./_rowService */ "./src/scripts/services/_rowService.ts");
-
-
-
-
-
-const bindServices = () => {
-    (0,_fileService__WEBPACK_IMPORTED_MODULE_1__["default"])();
-    (0,_folderService__WEBPACK_IMPORTED_MODULE_2__["default"])();
-    (0,_breadCrumbService__WEBPACK_IMPORTED_MODULE_3__["default"])();
-    (0,_rowService__WEBPACK_IMPORTED_MODULE_4__["default"])();
-    // reload page when user navigates with browser back/forward buttons
-    window.addEventListener('popstate', () => {
-        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
-    });
-};
-/* harmony default export */ __webpack_exports__["default"] = (bindServices);
 
 
 /***/ }),
@@ -8145,11 +8131,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
 /* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+/* harmony import */ var _services_fileService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/_fileService */ "./src/scripts/services/_fileService.ts");
+/* harmony import */ var _services_folderService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/_folderService */ "./src/scripts/services/_folderService.ts");
+
+
 
 
 
 (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__["default"])(() => {
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_1__["default"])();
+    (0,_services_fileService__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    (0,_services_folderService__WEBPACK_IMPORTED_MODULE_4__["default"])();
 });
 
 }();

@@ -4,9 +4,7 @@ import bindFolderService from './_folderService';
 import bindBreadCrumbService from './_breadCrumbService';
 import bindRowService from './_rowService';
 
-const bindServices = () => {
-    bindFileService();
-    bindFolderService();
+const bindItemServices = () => {
     bindBreadCrumbService();
     bindRowService();
 
@@ -16,4 +14,4 @@ const bindServices = () => {
     });
 };
 
-export default bindServices;
+export default bindItemServices;

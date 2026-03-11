@@ -1,4 +1,4 @@
-import bindServices from '../services/bindServices';
+import bindItemServices from '../services/_bindItemServices';
 import renderBreadcrumb from './_breadCrumb';
 import renderTableData from './_tableData';
 
@@ -8,7 +8,7 @@ const renderGrid = async () => {
     renderBreadcrumb();
 
     // init event listeners
-    bindServices();
+    bindItemServices();
 };
 
 export default renderGrid;

@@ -110,38 +110,26 @@ function handleFolderNavigation(folderName: string) {
     renderGrid();
 }
 
-function toggleRowSelection(
-    row: HTMLTableRowElement,
-    tableBody: Element,
-) {
+function toggleRowSelection(row: Element) {
     const checkbox = row.querySelector<HTMLInputElement>(
         'input[type="checkbox"]',
     );
-    if (!checkbox) return;
+    const checkboxes = row
+        .closest('.table-body')
+        ?.querySelectorAll<HTMLInputElement>(
+            'input[type="checkbox"]',
+        );
+    if (checkboxes.length === 0) return;
 
     const checked = checkbox.checked;
 
-    tableBody
-        ?.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')
-        .forEach((cb) => (cb.checked = false));
+    checkboxes.forEach((cb) => (cb.checked = false));
 
     checkbox.checked = !checked;
 }
 
-function handleTableClick(e: Event) {
-    const target = e.target as HTMLElement;
-
-    const row = target.closest<HTMLTableRowElement>('tr');
-    if (!row) return;
-
-    const tableBody = row.closest('.table-body');
-    if (!tableBody) return;
-
-    toggleRowSelection(row, tableBody);
-}
-
 const bindRowService = () => {
-    const tableBody = document.querySelector('.table-body');
+    const tableRows = document.querySelectorAll('.table-row');
     const explorerItems = document.querySelectorAll('.explorer-item');
     const updateButtons = document.querySelectorAll(
         '.btn-item-update',
@@ -150,10 +138,11 @@ const bindRowService = () => {
         '.btn-item-delete',
     );
 
-    // renderGrid called many times will cause multiple event listeners binding,
-    // so we need to remove old event listener before adding new one
-    tableBody.removeEventListener('click', handleTableClick);
-    tableBody.addEventListener('click', handleTableClick);
+    tableRows.forEach((row) => {
+        row.addEventListener('click', (e) => {
+            toggleRowSelection(row);
+        });
+    });
 
     explorerItems.forEach((item) => {
         item.addEventListener('click', (e) => {
