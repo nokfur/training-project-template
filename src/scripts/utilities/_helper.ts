@@ -73,6 +73,18 @@ export function getUniqueName(
     return name;
 }
 
+export function updateFolderPath(path?: string) {
+    const params = new URLSearchParams(window.location.search);
+
+    if (!path) {
+        params.delete('folder');
+    } else {
+        params.set('folder', path);
+    }
+
+    history.pushState({}, '', `?${params.toString()}`);
+}
+
 export function formatDate(value: string): string {
     const timestamp = Date.parse(value);
 

@@ -1,7 +1,7 @@
 import ready from '../utilities/_helper';
 import renderGrid from '../components/_grid';
 import 'bootstrap';
-import initialize from '../components/_init';
+import initialize from './_init';
 
 ready(() => {
     renderGrid();

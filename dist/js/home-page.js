@@ -7543,49 +7543,158 @@ const renderGrid = () => {
 
 /***/ }),
 
-/***/ "./src/scripts/components/_init.ts":
-/*!*****************************************!*\
-  !*** ./src/scripts/components/_init.ts ***!
-  \*****************************************/
+/***/ "./src/scripts/models/FileExtension.ts":
+/*!*********************************************!*\
+  !*** ./src/scripts/models/FileExtension.ts ***!
+  \*********************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
-/* harmony import */ var _models_FileExtension__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/FileExtension */ "./src/scripts/models/FileExtension.ts");
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FILE_EXTENSIONS: function() { return /* binding */ FILE_EXTENSIONS; }
+/* harmony export */ });
+const FILE_EXTENSIONS = ["xlsx", "docs", "pptx"];
+
+
+/***/ }),
+
+/***/ "./src/scripts/pages/_init.ts":
+/*!************************************!*\
+  !*** ./src/scripts/pages/_init.ts ***!
+  \************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
+/* harmony import */ var _services_fileService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/_fileService */ "./src/scripts/services/_fileService.ts");
+/* harmony import */ var _services_folderService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/_folderService */ "./src/scripts/services/_folderService.ts");
+/* harmony import */ var _services_breadCrumbService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/_breadCrumbService */ "./src/scripts/services/_breadCrumbService.ts");
+/* harmony import */ var _services_rowService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/_rowService */ "./src/scripts/services/_rowService.ts");
+
+
+
+
+
+const initialize = () => {
+    const uploadBtn = document.querySelector('#fileUploadBtn');
+    const newFolderBtn = document.querySelector('#newFolderBtn');
+    const tableBody = document.querySelector('.table-body');
+    const breadCrumb = document.querySelector('.breadcrumb');
+    (0,_services_fileService__WEBPACK_IMPORTED_MODULE_1__["default"])(uploadBtn);
+    (0,_services_folderService__WEBPACK_IMPORTED_MODULE_2__["default"])(newFolderBtn);
+    (0,_services_breadCrumbService__WEBPACK_IMPORTED_MODULE_3__["default"])(breadCrumb);
+    (0,_services_rowService__WEBPACK_IMPORTED_MODULE_4__["default"])(tableBody);
+    // reload page when user navigates with browser back/forward buttons
+    window.addEventListener('popstate', () => {
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    });
+};
+/* harmony default export */ __webpack_exports__["default"] = (initialize);
+
+
+/***/ }),
+
+/***/ "./src/scripts/services/_breadCrumbService.ts":
+/*!****************************************************!*\
+  !*** ./src/scripts/services/_breadCrumbService.ts ***!
+  \****************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
+/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
+
+
+const bindBreadCrumbService = (breadCrumbElement) => {
+    breadCrumbElement?.addEventListener('click', (e) => {
+        const button = e.target.closest('[data-folder-path]');
+        if (!button)
+            return;
+        const folderPath = button.dataset.folderPath;
+        (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_1__.updateFolderPath)(folderPath);
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    });
+};
+/* harmony default export */ __webpack_exports__["default"] = (bindBreadCrumbService);
+
+
+/***/ }),
+
+/***/ "./src/scripts/services/_fileService.ts":
+/*!**********************************************!*\
+  !*** ./src/scripts/services/_fileService.ts ***!
+  \**********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _models_FileExtension__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../models/FileExtension */ "./src/scripts/models/FileExtension.ts");
+/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
 /* harmony import */ var _utilities_storage__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/_storage */ "./src/scripts/utilities/_storage.ts");
-/* harmony import */ var _grid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_grid */ "./src/scripts/components/_grid.ts");
+/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
 
 
 
 
 function handleFileUpload(file) {
-    const ext = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getFileExtension)(file.name);
-    if (!_models_FileExtension__WEBPACK_IMPORTED_MODULE_1__.FILE_EXTENSIONS.includes(ext)) {
-        alert(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_1__.FILE_EXTENSIONS.join(', ')} allowed.`);
+    const ext = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_1__.getFileExtension)(file.name);
+    if (!_models_FileExtension__WEBPACK_IMPORTED_MODULE_0__.FILE_EXTENSIONS.includes(ext)) {
+        alert(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_0__.FILE_EXTENSIONS.join(', ')} allowed.`);
         return;
     }
     const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.loadExplorer)();
-    const folder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getCurrentFolder)(explorer);
+    const folder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_1__.getCurrentFolder)(explorer);
     if (folder) {
         const fileData = {
             id: crypto.randomUUID(),
-            name: (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getUniqueName)(folder, file.name, 'file'),
+            name: (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_1__.getUniqueName)(folder, file.name, 'file'),
             extension: ext,
-            modified: (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.formatDate)(new Date().toISOString()),
+            modified: (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_1__.formatDate)(new Date().toISOString()),
             modifiedBy: 'Administrator MOD',
         };
         folder.files.push(fileData);
         (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.saveExplorer)(explorer);
-        (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
     }
 }
+function handleUpload(e) {
+    const input = e.target;
+    const files = input.files;
+    if (!files || files.length === 0)
+        return;
+    for (const file of files) {
+        handleFileUpload(file);
+    }
+    // reset file input to allow uploading same file again if needed
+    input.value = '';
+}
+const bindFileService = (uploadBtn) => {
+    uploadBtn?.addEventListener('change', handleUpload);
+};
+/* harmony default export */ __webpack_exports__["default"] = (bindFileService);
+
+
+/***/ }),
+
+/***/ "./src/scripts/services/_folderService.ts":
+/*!************************************************!*\
+  !*** ./src/scripts/services/_folderService.ts ***!
+  \************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
+/* harmony import */ var _utilities_storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/_storage */ "./src/scripts/utilities/_storage.ts");
+/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
+
+
+
 function handleCreateFolder() {
-    const folderName = prompt('Enter folder name:');
+    const folderName = prompt('Enter folder name:').trim();
     if (!folderName) {
         alert('Folder name cannot be empty.');
         return;
     }
-    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.loadExplorer)();
+    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_1__.loadExplorer)();
     const parentFolder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getCurrentFolder)(explorer);
     if (parentFolder) {
         const newFolder = {
@@ -7597,41 +7706,47 @@ function handleCreateFolder() {
             subFolders: [],
         };
         parentFolder.subFolders.push(newFolder);
-        (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.saveExplorer)(explorer);
-        (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
+        (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_1__.saveExplorer)(explorer);
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_2__["default"])();
     }
 }
-function setFolderPath(path) {
-    const params = new URLSearchParams(window.location.search);
-    if (!path) {
-        params.delete('folder');
-    }
-    else {
-        params.set('folder', path);
-    }
-    history.pushState({}, '', `?${params.toString()}`);
-    (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
-}
-function openFolder(folderName) {
-    const params = new URLSearchParams(window.location.search);
-    let currentPath = params.get('folder');
-    const newPath = currentPath
-        ? `${currentPath}/${folderName}`
-        : folderName;
-    setFolderPath(newPath);
-}
+const bindFolderService = (createFolderBtn) => {
+    createFolderBtn?.addEventListener('click', () => {
+        handleCreateFolder();
+    });
+};
+/* harmony default export */ __webpack_exports__["default"] = (bindFolderService);
+
+
+/***/ }),
+
+/***/ "./src/scripts/services/_rowService.ts":
+/*!*********************************************!*\
+  !*** ./src/scripts/services/_rowService.ts ***!
+  \*********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
+/* harmony import */ var _models_FileExtension__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/FileExtension */ "./src/scripts/models/FileExtension.ts");
+/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
+/* harmony import */ var _utilities_storage__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utilities/_storage */ "./src/scripts/utilities/_storage.ts");
+
+
+
+
 function handleRename(selectedItemName, itemType) {
     let newName = prompt(`Enter new ${itemType} name:`, selectedItemName).trim();
     if (!newName || newName === selectedItemName)
         return;
-    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.loadExplorer)();
-    const currentFolder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getCurrentFolder)(explorer);
+    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_3__.loadExplorer)();
+    const currentFolder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_2__.getCurrentFolder)(explorer);
     if (!currentFolder)
         return;
     if (itemType === 'folder') {
         const folder = currentFolder.subFolders.find((f) => f.name === selectedItemName);
         if (folder)
-            folder.name = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getUniqueName)(currentFolder, newName, 'folder');
+            folder.name = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_2__.getUniqueName)(currentFolder, newName, 'folder');
     }
     if (itemType === 'file') {
         const file = currentFolder.files.find((f) => f.name === selectedItemName);
@@ -7648,18 +7763,20 @@ function handleRename(selectedItemName, itemType) {
         }
         else
             newName += `.${file.extension}`; // keep old extension if user not input extension part
-        file.name = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getUniqueName)(currentFolder, newName, 'file');
+        if (newName === selectedItemName)
+            return;
+        file.name = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_2__.getUniqueName)(currentFolder, newName, 'file');
         file.extension = newExt;
     }
-    (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.saveExplorer)(explorer);
-    (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_3__.saveExplorer)(explorer);
+    (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
 }
 function handleDelete(selectedItemName, itemType) {
-    const confirmed = confirm(`Are you sure you want to delete "${selectedItemName}"?`);
+    const confirmed = confirm(`Are you sure you want to delete the ${itemType} "${selectedItemName}"?`);
     if (!confirmed)
         return;
-    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.loadExplorer)();
-    const currentFolder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.getCurrentFolder)(explorer);
+    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_3__.loadExplorer)();
+    const currentFolder = (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_2__.getCurrentFolder)(explorer);
     if (!currentFolder)
         return;
     if (itemType === 'folder') {
@@ -7668,8 +7785,8 @@ function handleDelete(selectedItemName, itemType) {
     else {
         currentFolder.files = currentFolder.files.filter((file) => file.name !== selectedItemName);
     }
-    (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_2__.saveExplorer)(explorer);
-    (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_3__.saveExplorer)(explorer);
+    (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
 }
 function handleRowAction(target, row) {
     const btn = target.closest('[data-action]');
@@ -7691,7 +7808,13 @@ function handleFolderNavigation(target, row) {
     const itemType = row.dataset.itemType;
     if (itemType !== 'folder')
         return true;
-    openFolder(itemName);
+    const params = new URLSearchParams(window.location.search);
+    let currentPath = params.get('folder');
+    const newPath = currentPath
+        ? `${currentPath}/${itemName}`
+        : itemName;
+    (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_2__.updateFolderPath)(newPath);
+    (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
     return true;
 }
 function toggleRowSelection(row, tableBody) {
@@ -7704,26 +7827,8 @@ function toggleRowSelection(row, tableBody) {
         .forEach((cb) => (cb.checked = false));
     checkbox.checked = !checked;
 }
-const initialize = () => {
-    const uploadBtn = document.querySelector('#fileUploadBtn');
-    const newFolderBtn = document.querySelector('#newFolderBtn');
-    const tableBody = document.querySelector('.table-body');
-    const breadCrumb = document.querySelector('.breadcrumb');
-    uploadBtn?.addEventListener('change', (e) => {
-        const input = e.target;
-        const files = input.files;
-        if (!files || files.length === 0)
-            return;
-        for (const file of files) {
-            handleFileUpload(file);
-        }
-        // reset file input to allow uploading same file again if needed
-        input.value = '';
-    });
-    newFolderBtn?.addEventListener('click', () => {
-        handleCreateFolder();
-    });
-    tableBody?.addEventListener('click', (e) => {
+const bindRowService = (tableBody) => {
+    tableBody.addEventListener('click', (e) => {
         const target = e.target;
         const row = target.closest('tr');
         if (!row)
@@ -7734,34 +7839,8 @@ const initialize = () => {
             return;
         toggleRowSelection(row, tableBody);
     });
-    breadCrumb?.addEventListener('click', (e) => {
-        const button = e.target.closest('[data-folder-path]');
-        if (!button)
-            return;
-        const folderPath = button.dataset.folderPath;
-        setFolderPath(folderPath);
-    });
-    // reload page when user navigates with browser back/forward buttons
-    window.addEventListener('popstate', () => {
-        (0,_grid__WEBPACK_IMPORTED_MODULE_3__["default"])();
-    });
 };
-/* harmony default export */ __webpack_exports__["default"] = (initialize);
-
-
-/***/ }),
-
-/***/ "./src/scripts/models/FileExtension.ts":
-/*!*********************************************!*\
-  !*** ./src/scripts/models/FileExtension.ts ***!
-  \*********************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FILE_EXTENSIONS: function() { return /* binding */ FILE_EXTENSIONS; }
-/* harmony export */ });
-const FILE_EXTENSIONS = ["xlsx", "docs", "pptx"];
+/* harmony default export */ __webpack_exports__["default"] = (bindRowService);
 
 
 /***/ }),
@@ -7778,7 +7857,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   getCurrentFolder: function() { return /* binding */ getCurrentFolder; },
 /* harmony export */   getFileExtension: function() { return /* binding */ getFileExtension; },
 /* harmony export */   getFolderPath: function() { return /* binding */ getFolderPath; },
-/* harmony export */   getUniqueName: function() { return /* binding */ getUniqueName; }
+/* harmony export */   getUniqueName: function() { return /* binding */ getUniqueName; },
+/* harmony export */   updateFolderPath: function() { return /* binding */ updateFolderPath; }
 /* harmony export */ });
 const ready = (fn) => {
     if (document.readyState !== 'loading') {
@@ -7833,6 +7913,16 @@ function getUniqueName(folder, baseName, type) {
         counter++;
     }
     return name;
+}
+function updateFolderPath(path) {
+    const params = new URLSearchParams(window.location.search);
+    if (!path) {
+        params.delete('folder');
+    }
+    else {
+        params.set('folder', path);
+    }
+    history.pushState({}, '', `?${params.toString()}`);
 }
 function formatDate(value) {
     const timestamp = Date.parse(value);
@@ -8006,14 +8096,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
 /* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
-/* harmony import */ var _components_init__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/_init */ "./src/scripts/components/_init.ts");
+/* harmony import */ var _init__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_init */ "./src/scripts/pages/_init.ts");
 
 
 
 
 (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__["default"])(() => {
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_1__["default"])();
-    (0,_components_init__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    (0,_init__WEBPACK_IMPORTED_MODULE_3__["default"])();
 });
 
 }();
