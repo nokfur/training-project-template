@@ -7447,7 +7447,7 @@ const renderBreadcrumb = () => {
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _services_bindItemServices__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/bindItemServices */ "./src/scripts/services/bindItemServices.ts");
+/* harmony import */ var _services_bindEventServices__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/bindEventServices */ "./src/scripts/services/bindEventServices.ts");
 /* harmony import */ var _breadCrumb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_breadCrumb */ "./src/scripts/components/_breadCrumb.ts");
 /* harmony import */ var _tableData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_tableData */ "./src/scripts/components/_tableData.ts");
 
@@ -7458,7 +7458,7 @@ const renderGrid = async () => {
     await (0,_tableData__WEBPACK_IMPORTED_MODULE_2__["default"])();
     (0,_breadCrumb__WEBPACK_IMPORTED_MODULE_1__["default"])();
     // init event listeners
-    (0,_services_bindItemServices__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    (0,_services_bindEventServices__WEBPACK_IMPORTED_MODULE_0__["default"])();
 };
 /* harmony default export */ __webpack_exports__["default"] = (renderGrid);
 
@@ -7641,6 +7641,7 @@ function handleUpload(e) {
 }
 const bindFileService = () => {
     const uploadBtn = document.querySelector('#fileUploadBtn');
+    uploadBtn?.removeEventListener('change', handleUpload);
     uploadBtn?.addEventListener('change', handleUpload);
 };
 /* harmony default export */ __webpack_exports__["default"] = (bindFileService);
@@ -7666,9 +7667,8 @@ function handleCreateFolder() {
 }
 const bindFolderService = () => {
     const createFolderBtn = document.querySelector('#newFolderBtn');
-    createFolderBtn?.addEventListener('click', () => {
-        handleCreateFolder();
-    });
+    createFolderBtn?.removeEventListener('click', handleCreateFolder);
+    createFolderBtn?.addEventListener('click', handleCreateFolder);
 };
 /* harmony default export */ __webpack_exports__["default"] = (bindFolderService);
 
@@ -7763,48 +7763,28 @@ const bindRowService = () => {
 
 /***/ }),
 
-/***/ "./src/scripts/services/bindItemServices.ts":
-/*!**************************************************!*\
-  !*** ./src/scripts/services/bindItemServices.ts ***!
-  \**************************************************/
+/***/ "./src/scripts/services/bindEventServices.ts":
+/*!***************************************************!*\
+  !*** ./src/scripts/services/bindEventServices.ts ***!
+  \***************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _breadCrumbService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_breadCrumbService */ "./src/scripts/services/_breadCrumbService.ts");
-/* harmony import */ var _rowService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_rowService */ "./src/scripts/services/_rowService.ts");
-
-
-const bindItemServices = () => {
-    (0,_breadCrumbService__WEBPACK_IMPORTED_MODULE_0__["default"])();
-    (0,_rowService__WEBPACK_IMPORTED_MODULE_1__["default"])();
-};
-/* harmony default export */ __webpack_exports__["default"] = (bindItemServices);
-
-
-/***/ }),
-
-/***/ "./src/scripts/services/bindOneTimeServices.ts":
-/*!*****************************************************!*\
-  !*** ./src/scripts/services/bindOneTimeServices.ts ***!
-  \*****************************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
 /* harmony import */ var _fileService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_fileService */ "./src/scripts/services/_fileService.ts");
 /* harmony import */ var _folderService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_folderService */ "./src/scripts/services/_folderService.ts");
+/* harmony import */ var _rowService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_rowService */ "./src/scripts/services/_rowService.ts");
 
 
 
-const bindOneTimeServices = () => {
+
+const bindEventServices = () => {
     (0,_fileService__WEBPACK_IMPORTED_MODULE_1__["default"])();
     (0,_folderService__WEBPACK_IMPORTED_MODULE_2__["default"])();
-    // reload page when user navigates with browser back/forward buttons
-    window.addEventListener('popstate', () => {
-        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
-    });
+    (0,_breadCrumbService__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    (0,_rowService__WEBPACK_IMPORTED_MODULE_3__["default"])();
 };
-/* harmony default export */ __webpack_exports__["default"] = (bindOneTimeServices);
+/* harmony default export */ __webpack_exports__["default"] = (bindEventServices);
 
 
 /***/ }),
@@ -7846,13 +7826,24 @@ class Helper {
         }
         return null;
     }
+    static deepDecode(value) {
+        let decoded = value;
+        let prev;
+        do {
+            prev = decoded;
+            decoded = decodeURIComponent(decoded);
+        } while (decoded !== prev);
+        return decoded;
+    }
     static getFolderPath() {
         const params = new URLSearchParams(window.location.search);
         const folderPath = params.get('folder');
         if (!folderPath)
             return [];
-        return folderPath.split('/');
+        // deep decode to handle multiple levels of encoding (e.g. when folder name contains special characters and spaces)
+        return this.deepDecode(folderPath).split('/');
     }
+    // use root as param to have target folder have reference to the root
     static getCurrentFolder(root) {
         const folderPath = this.getFolderPath();
         if (folderPath.length === 0)
@@ -7872,6 +7863,17 @@ class Helper {
                 return null;
         }
         return currentFolder;
+    }
+    static updateFolderPath(path) {
+        const params = new URLSearchParams(window.location.search);
+        if (!path) {
+            params.delete('folder');
+        }
+        else {
+            // encode path to handle special characters, spaces and unicode
+            params.set('folder', encodeURI(path));
+        }
+        history.pushState({}, '', `?${params.toString()}`);
     }
     static getUniqueName(existingNames, name) {
         let uniqueName = name;
@@ -7893,16 +7895,6 @@ class Helper {
             .filter((subFolder) => subFolder.id !== id)
             .map((subFolder) => subFolder.name));
         return this.getUniqueName(existingNames, name);
-    }
-    static updateFolderPath(path) {
-        const params = new URLSearchParams(window.location.search);
-        if (!path) {
-            params.delete('folder');
-        }
-        else {
-            params.set('folder', path);
-        }
-        history.pushState({}, '', `?${params.toString()}`);
     }
     static formatDate(value) {
         const timestamp = Date.parse(value);
@@ -8022,6 +8014,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class FileService {
+    // avoid using static explorer to prevent data is outdated after some other actions
+    // always data get from the storage
     static isValidFileName(name) {
         const ext = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getFileExtension(name);
         if (!_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.includes(ext))
@@ -8031,7 +8025,8 @@ class FileService {
     static upload(files) {
         if (!files || files.length === 0)
             return;
-        const folder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(this.explorer);
+        const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
+        const folder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!folder)
             return;
         const upcomingFiles = [];
@@ -8053,14 +8048,15 @@ class FileService {
         if (upcomingFiles.length === 0)
             return;
         folder.files.push(...upcomingFiles);
-        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(this.explorer);
+        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
     static update(id, newName) {
         newName = newName.trim();
-        const item = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getItemById(this.explorer, id);
+        const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
+        const item = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getItemById(explorer, id);
         if (!item || !newName || newName === item.name)
             return;
-        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(this.explorer);
+        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
             return;
         if (newName.includes('.')) {
@@ -8073,19 +8069,19 @@ class FileService {
         else
             newName = `${newName}.${item.extension}`;
         item.name = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(currentFolder, newName, item.id);
-        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(this.explorer);
+        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
     static delete(id) {
         if (!id)
             return;
-        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(this.explorer);
+        const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
+        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
             return;
         currentFolder.files = currentFolder.files.filter((file) => file.id !== id);
-        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(this.explorer);
+        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
 }
-FileService.explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
 
 
 /***/ }),
@@ -8105,12 +8101,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class FolderService {
+    // avoid using static explorer to prevent data is outdated after some other actions
+    // always data get from the storage
     static create(name) {
         if (!name) {
             alert('Folder name cannot be empty.');
             return false;
         }
-        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(this.explorer);
+        const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
+        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
             return;
         const newFolder = {
@@ -8122,27 +8121,29 @@ class FolderService {
             subFolders: [],
         };
         currentFolder.subFolders.push(newFolder);
-        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(this.explorer);
+        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
     static update(id, newName) {
         newName = newName.trim();
-        const item = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getItemById(this.explorer, id);
+        const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
+        const item = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getItemById(explorer, id);
         if (!item || !newName || newName === item.name)
             return;
-        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(this.explorer);
+        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
             return;
         item.name = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFolderName(currentFolder, newName, item.id);
-        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(this.explorer);
+        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
     static delete(id) {
         if (!id)
             return;
-        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(this.explorer);
+        const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
+        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
             return;
         currentFolder.subFolders = currentFolder.subFolders.filter((folder) => folder.id !== id);
-        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(this.explorer);
+        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
     static navigateTo(folderName) {
         if (!folderName)
@@ -8155,7 +8156,6 @@ class FolderService {
         _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.updateFolderPath(newPath);
     }
 }
-FolderService.explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
 
 
 /***/ }),
@@ -8320,13 +8320,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
 /* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
 /* harmony import */ var bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
-/* harmony import */ var _services_bindOneTimeServices__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/bindOneTimeServices */ "./src/scripts/services/bindOneTimeServices.ts");
-
 
 
 
 (0,_utilities_helper__WEBPACK_IMPORTED_MODULE_0__["default"])(() => {
-    (0,_services_bindOneTimeServices__WEBPACK_IMPORTED_MODULE_3__["default"])();
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_1__["default"])();
 });
 

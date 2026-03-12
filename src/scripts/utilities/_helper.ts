@@ -32,14 +32,29 @@ export class Helper {
         return null;
     }
 
+    private static deepDecode(value: string): string {
+        let decoded = value;
+        let prev;
+
+        do {
+            prev = decoded;
+            decoded = decodeURIComponent(decoded);
+        } while (decoded !== prev);
+
+        return decoded;
+    }
+
     static getFolderPath(): string[] {
         const params = new URLSearchParams(window.location.search);
         const folderPath = params.get('folder');
 
         if (!folderPath) return [];
-        return folderPath.split('/');
+
+        // deep decode to handle multiple levels of encoding (e.g. when folder name contains special characters and spaces)
+        return this.deepDecode(folderPath).split('/');
     }
 
+    // use root as param to have target folder have reference to the root
     static getCurrentFolder(root: IFolder): IFolder | null {
         const folderPath = this.getFolderPath();
 
@@ -60,6 +75,19 @@ export class Helper {
             if (!found) return null;
         }
         return currentFolder;
+    }
+
+    static updateFolderPath(path?: string) {
+        const params = new URLSearchParams(window.location.search);
+
+        if (!path) {
+            params.delete('folder');
+        } else {
+            // encode path to handle special characters, spaces and unicode
+            params.set('folder', encodeURI(path));
+        }
+
+        history.pushState({}, '', `?${params.toString()}`);
     }
 
     private static getUniqueName(
@@ -103,18 +131,6 @@ export class Helper {
         );
 
         return this.getUniqueName(existingNames, name);
-    }
-
-    static updateFolderPath(path?: string) {
-        const params = new URLSearchParams(window.location.search);
-
-        if (!path) {
-            params.delete('folder');
-        } else {
-            params.set('folder', path);
-        }
-
-        history.pushState({}, '', `?${params.toString()}`);
     }
 
     static delay = (ms: number) =>

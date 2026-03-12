@@ -3,7 +3,8 @@ import { Helper } from '../_helper';
 import { StorageService } from './StorageService';
 
 export class FolderService {
-    private static explorer = StorageService.loadExplorer();
+    // avoid using static explorer to prevent data is outdated after some other actions
+    // always data get from the storage
 
     static create(name: string): boolean {
         if (!name) {
@@ -11,7 +12,8 @@ export class FolderService {
             return false;
         }
 
-        const currentFolder = Helper.getCurrentFolder(this.explorer);
+        const explorer = StorageService.loadExplorer();
+        const currentFolder = Helper.getCurrentFolder(explorer);
         if (!currentFolder) return;
 
         const newFolder: IFolder = {
@@ -24,16 +26,18 @@ export class FolderService {
         };
 
         currentFolder.subFolders.push(newFolder);
-        StorageService.saveExplorer(this.explorer);
+        StorageService.saveExplorer(explorer);
     }
 
     static update(id: string, newName: string) {
         newName = newName.trim();
-        const item = Helper.getItemById(this.explorer, id);
+
+        const explorer = StorageService.loadExplorer();
+        const item = Helper.getItemById(explorer, id);
 
         if (!item || !newName || newName === item.name) return;
 
-        const currentFolder = Helper.getCurrentFolder(this.explorer);
+        const currentFolder = Helper.getCurrentFolder(explorer);
         if (!currentFolder) return;
 
         item.name = Helper.getUniqueFolderName(
@@ -42,19 +46,20 @@ export class FolderService {
             item.id,
         );
 
-        StorageService.saveExplorer(this.explorer);
+        StorageService.saveExplorer(explorer);
     }
 
     static delete(id: string) {
         if (!id) return;
 
-        const currentFolder = Helper.getCurrentFolder(this.explorer);
+        const explorer = StorageService.loadExplorer();
+        const currentFolder = Helper.getCurrentFolder(explorer);
         if (!currentFolder) return;
 
         currentFolder.subFolders = currentFolder.subFolders.filter(
             (folder) => folder.id !== id,
         );
-        StorageService.saveExplorer(this.explorer);
+        StorageService.saveExplorer(explorer);
     }
 
     static navigateTo(folderName: string) {

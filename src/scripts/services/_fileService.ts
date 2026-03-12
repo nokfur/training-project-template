@@ -14,6 +14,7 @@ function handleUpload(e: Event) {
 const bindFileService = () => {
     const uploadBtn = document.querySelector('#fileUploadBtn');
 
+    uploadBtn?.removeEventListener('change', handleUpload);
     uploadBtn?.addEventListener('change', handleUpload);
 };
 

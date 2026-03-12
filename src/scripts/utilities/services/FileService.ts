@@ -5,7 +5,8 @@ import IFile from '../../models/IFile';
 import { FILE_EXTENSIONS } from '../../models/FileExtension';
 
 export class FileService {
-    private static explorer = StorageService.loadExplorer();
+    // avoid using static explorer to prevent data is outdated after some other actions
+    // always data get from the storage
 
     private static isValidFileName(name: string): boolean {
         const ext = Helper.getFileExtension(name);
@@ -16,7 +17,8 @@ export class FileService {
     static upload(files: FileList) {
         if (!files || files.length === 0) return;
 
-        const folder = Helper.getCurrentFolder(this.explorer);
+        const explorer = StorageService.loadExplorer();
+        const folder = Helper.getCurrentFolder(explorer);
         if (!folder) return;
 
         const upcomingFiles: IFile[] = [];
@@ -43,16 +45,18 @@ export class FileService {
         if (upcomingFiles.length === 0) return;
 
         folder.files.push(...upcomingFiles);
-        StorageService.saveExplorer(this.explorer);
+        StorageService.saveExplorer(explorer);
     }
 
     static update(id: string, newName: string) {
         newName = newName.trim();
-        const item = Helper.getItemById(this.explorer, id) as IFile;
+
+        const explorer = StorageService.loadExplorer();
+        const item = Helper.getItemById(explorer, id) as IFile;
 
         if (!item || !newName || newName === item.name) return;
 
-        const currentFolder = Helper.getCurrentFolder(this.explorer);
+        const currentFolder = Helper.getCurrentFolder(explorer);
         if (!currentFolder) return;
 
         if (newName.includes('.')) {
@@ -71,18 +75,19 @@ export class FileService {
             newName,
             item.id,
         );
-        StorageService.saveExplorer(this.explorer);
+        StorageService.saveExplorer(explorer);
     }
 
     static delete(id: string) {
         if (!id) return;
 
-        const currentFolder = Helper.getCurrentFolder(this.explorer);
+        const explorer = StorageService.loadExplorer();
+        const currentFolder = Helper.getCurrentFolder(explorer);
         if (!currentFolder) return;
 
         currentFolder.files = currentFolder.files.filter(
             (file) => file.id !== id,
         );
-        StorageService.saveExplorer(this.explorer);
+        StorageService.saveExplorer(explorer);
     }
 }
