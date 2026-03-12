@@ -7579,6 +7579,105 @@ const renderTableData = async () => {
 
 /***/ }),
 
+/***/ "./src/scripts/models/BaseModal.ts":
+/*!*****************************************!*\
+  !*** ./src/scripts/models/BaseModal.ts ***!
+  \*****************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   BaseModal: function() { return /* binding */ BaseModal; }
+/* harmony export */ });
+const { Modal } = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
+class BaseModal {
+    constructor() {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = this.template().trim();
+        this.element = wrapper.firstElementChild;
+        document.body.insertAdjacentElement('beforeend', this.element);
+        this.modal = new Modal(this.element);
+        // Remove modal after it closes
+        this.element.addEventListener('hidden.bs.modal', () => {
+            this.destroy();
+        });
+        this.bindEvents();
+    }
+    show() {
+        this.modal.show();
+    }
+    hide() {
+        this.modal.hide();
+    }
+    destroy() {
+        this.modal.dispose(); // remove bootstrap instance
+        this.element.remove(); // remove DOM
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/scripts/models/ConfirmModal.ts":
+/*!********************************************!*\
+  !*** ./src/scripts/models/ConfirmModal.ts ***!
+  \********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   ConfirmModal: function() { return /* binding */ ConfirmModal; }
+/* harmony export */ });
+/* harmony import */ var _BaseModal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseModal */ "./src/scripts/models/BaseModal.ts");
+
+class ConfirmModal extends _BaseModal__WEBPACK_IMPORTED_MODULE_0__.BaseModal {
+    template() {
+        return `
+        <div class="modal fade">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+              <div class="modal-header">
+                <h5 class="modal-title">Confirm</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <div class="modal-body">
+                <p class="confirm-message"></p>
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button class="btn btn-danger confirm-ok">
+                    OK
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        `;
+    }
+    bindEvents() {
+        this.messageEl = this.element.querySelector('.confirm-message');
+        this.okBtn = this.element.querySelector('.confirm-ok');
+        this.okBtn.addEventListener('click', () => {
+            this.callback?.();
+            this.hide();
+        });
+    }
+    confirm(message, callback) {
+        this.messageEl.textContent = message;
+        this.callback = callback;
+        this.show();
+    }
+}
+
+
+/***/ }),
+
 /***/ "./src/scripts/models/FileExtension.ts":
 /*!*********************************************!*\
   !*** ./src/scripts/models/FileExtension.ts ***!
@@ -7590,6 +7689,98 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   FILE_EXTENSIONS: function() { return /* binding */ FILE_EXTENSIONS; }
 /* harmony export */ });
 const FILE_EXTENSIONS = ["xlsx", "docs", "pptx"];
+
+
+/***/ }),
+
+/***/ "./src/scripts/models/InputModal.ts":
+/*!******************************************!*\
+  !*** ./src/scripts/models/InputModal.ts ***!
+  \******************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   InputModal: function() { return /* binding */ InputModal; }
+/* harmony export */ });
+/* harmony import */ var _BaseModal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseModal */ "./src/scripts/models/BaseModal.ts");
+
+class InputModal extends _BaseModal__WEBPACK_IMPORTED_MODULE_0__.BaseModal {
+    template() {
+        return `
+        <div class="modal fade">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+              <div class="modal-header">
+                <h5 class="modal-title">Input</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <div class="modal-body">
+                <p class="input-message"></p>
+
+                <input 
+                    type="text"
+                    class="form-control input-field"
+                />
+
+                <div class="text-danger small mt-2 input-error d-none">
+                    Value cannot be empty
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <button class="btn btn-primary input-ok">
+                    OK
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        `;
+    }
+    bindEvents() {
+        this.messageEl =
+            this.element.querySelector('.input-message');
+        this.inputEl = this.element.querySelector('.input-field');
+        this.okBtn = this.element.querySelector('.input-ok');
+        const errorEl = this.element.querySelector('.input-error');
+        this.okBtn.addEventListener('click', () => {
+            const value = this.inputEl.value.trim();
+            if (!value) {
+                errorEl.classList.remove('d-none');
+                this.inputEl.focus();
+                return;
+            }
+            this.callback?.(value);
+            this.hide();
+        });
+        // remove error when typing
+        this.inputEl.addEventListener('input', () => {
+            errorEl.classList.add('d-none');
+        });
+        // Enter key submits
+        this.inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                this.okBtn.click();
+            }
+        });
+    }
+    prompt(message, callback, defaultValue = '') {
+        this.messageEl.textContent = message;
+        this.inputEl.value = defaultValue;
+        this.callback = callback;
+        this.show();
+        setTimeout(() => {
+            this.inputEl.focus();
+        }, 100);
+    }
+}
 
 
 /***/ }),
@@ -7683,45 +7874,58 @@ const bindFolderService = () => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
-/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
-/* harmony import */ var _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/services/FileService */ "./src/scripts/utilities/services/FileService.ts");
-/* harmony import */ var _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utilities/services/FolderService */ "./src/scripts/utilities/services/FolderService.ts");
-/* harmony import */ var _utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utilities/services/StorageService */ "./src/scripts/utilities/services/StorageService.ts");
+/* harmony import */ var _models_ConfirmModal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/ConfirmModal */ "./src/scripts/models/ConfirmModal.ts");
+/* harmony import */ var _models_InputModal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/InputModal */ "./src/scripts/models/InputModal.ts");
+/* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
+/* harmony import */ var _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utilities/services/FileService */ "./src/scripts/utilities/services/FileService.ts");
+/* harmony import */ var _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utilities/services/FolderService */ "./src/scripts/utilities/services/FolderService.ts");
+/* harmony import */ var _utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../utilities/services/StorageService */ "./src/scripts/utilities/services/StorageService.ts");
+
+
 
 
 
 
 
 function handleRename(selectedItemId, itemType) {
-    const item = _utilities_helper__WEBPACK_IMPORTED_MODULE_1__.Helper.getItemById(_utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_4__.StorageService.loadExplorer(), selectedItemId);
-    const newName = prompt(`Enter new ${itemType} name:`, item.name);
-    if (itemType === 'folder')
-        _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_3__.FolderService.update(selectedItemId, newName);
-    else if (itemType === 'file')
-        _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__.FileService.update(selectedItemId, newName);
-    (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    const item = _utilities_helper__WEBPACK_IMPORTED_MODULE_3__.Helper.getItemById(_utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_6__.StorageService.loadExplorer(), selectedItemId);
+    console.log(item);
+    const inputModal = new _models_InputModal__WEBPACK_IMPORTED_MODULE_2__.InputModal();
+    inputModal.prompt(`Enter new ${itemType} name:`, (newName) => {
+        if (itemType === 'folder')
+            _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.update(selectedItemId, newName);
+        else if (itemType === 'file')
+            _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__.FileService.update(selectedItemId, newName);
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    }, item.name);
 }
 function handleDelete(selectedItemId, itemType) {
-    const item = _utilities_helper__WEBPACK_IMPORTED_MODULE_1__.Helper.getItemById(_utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_4__.StorageService.loadExplorer(), selectedItemId);
-    const confirmed = confirm(`Are you sure you want to delete the ${itemType} "${item.name}"?`);
-    if (!confirmed)
-        return;
-    if (itemType === 'folder')
-        _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_3__.FolderService.delete(selectedItemId);
-    else if (itemType === 'file')
-        _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__.FileService.delete(selectedItemId);
-    (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    const item = _utilities_helper__WEBPACK_IMPORTED_MODULE_3__.Helper.getItemById(_utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_6__.StorageService.loadExplorer(), selectedItemId);
+    const confirmModal = new _models_ConfirmModal__WEBPACK_IMPORTED_MODULE_1__.ConfirmModal();
+    confirmModal.confirm(`Are you sure you want to delete the ${itemType} "${item.name}"?`, () => {
+        if (itemType === 'folder')
+            _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.delete(selectedItemId);
+        else if (itemType === 'file')
+            _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__.FileService.delete(selectedItemId);
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    });
 }
-function toggleRowSelection(row) {
+function toggleRowSelection(row, e) {
     const checkbox = row.querySelector('input[type="checkbox"]');
     const checkboxes = row
         .closest('.table-body')
         ?.querySelectorAll('input[type="checkbox"]');
-    if (checkboxes.length === 0)
+    if (!checkbox || !checkboxes)
         return;
     const checked = checkbox.checked;
     checkboxes.forEach((cb) => (cb.checked = false));
-    checkbox.checked = !checked;
+    // when clicking on checkbox, browser toggle it already, so we want to keep that state
+    // when clicking on other part of the row, we want to toggle the checkbox
+    const clickedOnCheckbox = e.target.closest('input[type="checkbox"]');
+    if (!clickedOnCheckbox)
+        checkbox.checked = !checked;
+    else
+        checkbox.checked = checked;
 }
 const bindRowService = () => {
     const tableRows = document.querySelectorAll('.table-row');
@@ -7730,14 +7934,14 @@ const bindRowService = () => {
     const deleteButtons = document.querySelectorAll('.btn-item-delete');
     tableRows.forEach((row) => {
         row.addEventListener('click', (e) => {
-            toggleRowSelection(row);
+            toggleRowSelection(row, e);
         });
     });
     explorerItems.forEach((item) => {
         item.addEventListener('click', (e) => {
             e.stopPropagation();
             const folderName = item.getAttribute('data-folder-name');
-            _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_3__.FolderService.navigateTo(folderName);
+            _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.navigateTo(folderName);
             (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
         });
     });
@@ -7931,28 +8135,28 @@ const STORAGE_KEY = 'explorer';
 function mockFileData() {
     return [
         {
-            id: '1',
+            id: crypto.randomUUID(),
             name: 'CoasterAndBargeLoading.xlsx',
             modified: 'A few seconds ago',
             modifiedBy: 'Administrator MOD',
             extension: 'xlsx',
         },
         {
-            id: '2',
+            id: crypto.randomUUID(),
             name: 'RevenueByServices.xlsx',
             modified: 'A few seconds ago',
             modifiedBy: 'Administrator MOD',
             extension: 'xlsx',
         },
         {
-            id: '3',
+            id: crypto.randomUUID(),
             name: 'RevenueByServices2016.xlsx',
             modified: 'A few seconds ago',
             modifiedBy: 'Administrator MOD',
             extension: 'xlsx',
         },
         {
-            id: '4',
+            id: crypto.randomUUID(),
             name: 'RevenueByServices2017.xlsx',
             modified: 'A few seconds ago',
             modifiedBy: 'Administrator MOD',
@@ -7963,7 +8167,7 @@ function mockFileData() {
 function mockFolderData() {
     return [
         {
-            id: '1',
+            id: crypto.randomUUID(),
             name: 'CAS',
             modified: 'April 30',
             modifiedBy: 'Megan Bowen',

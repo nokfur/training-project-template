@@ -1,5 +1,7 @@
 import renderGrid from '../components/_grid';
+import { ConfirmModal } from '../models/ConfirmModal';
 import { ExplorerItemType } from '../models/ExplorerItemType';
+import { InputModal } from '../models/InputModal';
 import { Helper } from '../utilities/_helper';
 import { FileService } from '../utilities/services/FileService';
 import { FolderService } from '../utilities/services/FolderService';
@@ -13,15 +15,21 @@ function handleRename(
         StorageService.loadExplorer(),
         selectedItemId,
     );
+    console.log(item);
 
-    const newName = prompt(`Enter new ${itemType} name:`, item.name);
+    const inputModal = new InputModal();
+    inputModal.prompt(
+        `Enter new ${itemType} name:`,
+        (newName) => {
+            if (itemType === 'folder')
+                FolderService.update(selectedItemId, newName);
+            else if (itemType === 'file')
+                FileService.update(selectedItemId, newName);
 
-    if (itemType === 'folder')
-        FolderService.update(selectedItemId, newName);
-    else if (itemType === 'file')
-        FileService.update(selectedItemId, newName);
-
-    renderGrid();
+            renderGrid();
+        },
+        item.name,
+    );
 }
 
 function handleDelete(
@@ -32,19 +40,22 @@ function handleDelete(
         StorageService.loadExplorer(),
         selectedItemId,
     );
-    const confirmed = confirm(
+
+    const confirmModal = new ConfirmModal();
+    confirmModal.confirm(
         `Are you sure you want to delete the ${itemType} "${item.name}"?`,
+        () => {
+            if (itemType === 'folder')
+                FolderService.delete(selectedItemId);
+            else if (itemType === 'file')
+                FileService.delete(selectedItemId);
+
+            renderGrid();
+        },
     );
-
-    if (!confirmed) return;
-
-    if (itemType === 'folder') FolderService.delete(selectedItemId);
-    else if (itemType === 'file') FileService.delete(selectedItemId);
-
-    renderGrid();
 }
 
-function toggleRowSelection(row: Element) {
+function toggleRowSelection(row: Element, e: Event) {
     const checkbox = row.querySelector<HTMLInputElement>(
         'input[type="checkbox"]',
     );
@@ -53,13 +64,20 @@ function toggleRowSelection(row: Element) {
         ?.querySelectorAll<HTMLInputElement>(
             'input[type="checkbox"]',
         );
-    if (checkboxes.length === 0) return;
+
+    if (!checkbox || !checkboxes) return;
 
     const checked = checkbox.checked;
 
     checkboxes.forEach((cb) => (cb.checked = false));
 
-    checkbox.checked = !checked;
+    // when clicking on checkbox, browser toggle it already, so we want to keep that state
+    // when clicking on other part of the row, we want to toggle the checkbox
+    const clickedOnCheckbox = (e.target as HTMLElement).closest(
+        'input[type="checkbox"]',
+    );
+    if (!clickedOnCheckbox) checkbox.checked = !checked;
+    else checkbox.checked = checked;
 }
 
 const bindRowService = () => {
@@ -74,7 +92,7 @@ const bindRowService = () => {
 
     tableRows.forEach((row) => {
         row.addEventListener('click', (e) => {
-            toggleRowSelection(row);
+            toggleRowSelection(row, e);
         });
     });
 

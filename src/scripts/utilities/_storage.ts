@@ -6,28 +6,28 @@ const STORAGE_KEY = 'explorer';
 function mockFileData(): IFile[] {
     return [
         {
-            id: '1',
+            id: crypto.randomUUID(),
             name: 'CoasterAndBargeLoading.xlsx',
             modified: 'A few seconds ago',
             modifiedBy: 'Administrator MOD',
             extension: 'xlsx',
         },
         {
-            id: '2',
+            id: crypto.randomUUID(),
             name: 'RevenueByServices.xlsx',
             modified: 'A few seconds ago',
             modifiedBy: 'Administrator MOD',
             extension: 'xlsx',
         },
         {
-            id: '3',
+            id: crypto.randomUUID(),
             name: 'RevenueByServices2016.xlsx',
             modified: 'A few seconds ago',
             modifiedBy: 'Administrator MOD',
             extension: 'xlsx',
         },
         {
-            id: '4',
+            id: crypto.randomUUID(),
             name: 'RevenueByServices2017.xlsx',
             modified: 'A few seconds ago',
             modifiedBy: 'Administrator MOD',
@@ -39,7 +39,7 @@ function mockFileData(): IFile[] {
 function mockFolderData(): IFolder[] {
     return [
         {
-            id: '1',
+            id: crypto.randomUUID(),
             name: 'CAS',
             modified: 'April 30',
             modifiedBy: 'Megan Bowen',
