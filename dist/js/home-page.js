@@ -7473,7 +7473,7 @@ const renderGrid = async () => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
-/* harmony import */ var _utilities_storage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/_storage */ "./src/scripts/utilities/_storage.ts");
+/* harmony import */ var _utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/services/StorageService */ "./src/scripts/utilities/services/StorageService.ts");
 
 
 function getItemIcon(data, type) {
@@ -7488,15 +7488,15 @@ function getItemIcon(data, type) {
     }
     return itemIconMap[data.extension];
 }
-function renderItemName(itemName, isFile) {
-    return isFile
-        ? `<div class="position-relative d-inline-block explorer-item">
+function renderItemName(data, type) {
+    return data.isGlimmer
+        ? `<div class="position-relative d-inline-block explorer-item" data-item-id="${data.id}" data-item-name="${data.name}" data-item-type="${type}">
                 <iconify-icon icon="tabler:loader-quarter" class="fs-5 text-pink position-absolute -top-1 -left-2">
                 </iconify-icon>
 
-                ${itemName}
+                ${data.name}
             </div>`
-        : `<div class="d-inline-block explorer-item" data-folder-name="${itemName}">${itemName}</div>`;
+        : `<div class="d-inline-block explorer-item" data-item-id="${data.id}" data-item-name="${data.name}" data-item-type="${type}">${data.name}</div>`;
 }
 function renderRow(data, type) {
     return `<tr class="table-row ">
@@ -7511,7 +7511,7 @@ function renderRow(data, type) {
                     </div>
                 </td>
                 <td class="align-middle" data-label="Name">
-                    ${renderItemName(data.name, type === 'file')}
+                    ${renderItemName(data, type)}
                 </td>
                 <td data-label="Modified" class="text-secondary align-middle">
                     ${_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.formatDate(data.modified)}
@@ -7548,7 +7548,7 @@ function renderCustomRowMessage(content) {
             </tr>`;
 }
 const renderTableData = async () => {
-    const explorer = (0,_utilities_storage__WEBPACK_IMPORTED_MODULE_1__.loadExplorer)();
+    const explorer = _utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
     const data = _utilities_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
     const tableBody = document.querySelector('.table-body');
     if (!tableBody)
@@ -7560,7 +7560,7 @@ const renderTableData = async () => {
         </div>
     `);
     // mock loading time
-    await _utilities_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.delay(1000);
+    await _utilities_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.delay(500);
     if (data === null) {
         tableBody.innerHTML = renderCustomRowMessage(`<span>Folder not found</span>`);
         return;
@@ -7940,8 +7940,16 @@ const bindRowService = () => {
     explorerItems.forEach((item) => {
         item.addEventListener('click', (e) => {
             e.stopPropagation();
-            const folderName = item.getAttribute('data-folder-name');
-            _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.navigateTo(folderName);
+            const id = item.getAttribute('data-item-id');
+            const name = item.getAttribute('data-item-name');
+            const type = item.getAttribute('data-item-type');
+            if (type === 'folder') {
+                _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.view(id);
+                _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.navigateTo(name);
+            }
+            else {
+                _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__.FileService.view(id);
+            }
             (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
         });
     });
@@ -8120,87 +8128,6 @@ Helper.delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /***/ }),
 
-/***/ "./src/scripts/utilities/_storage.ts":
-/*!*******************************************!*\
-  !*** ./src/scripts/utilities/_storage.ts ***!
-  \*******************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   loadExplorer: function() { return /* binding */ loadExplorer; },
-/* harmony export */   saveExplorer: function() { return /* binding */ saveExplorer; }
-/* harmony export */ });
-const STORAGE_KEY = 'explorer';
-function mockFileData() {
-    return [
-        {
-            id: crypto.randomUUID(),
-            name: 'CoasterAndBargeLoading.xlsx',
-            modified: 'A few seconds ago',
-            modifiedBy: 'Administrator MOD',
-            extension: 'xlsx',
-        },
-        {
-            id: crypto.randomUUID(),
-            name: 'RevenueByServices.xlsx',
-            modified: 'A few seconds ago',
-            modifiedBy: 'Administrator MOD',
-            extension: 'xlsx',
-        },
-        {
-            id: crypto.randomUUID(),
-            name: 'RevenueByServices2016.xlsx',
-            modified: 'A few seconds ago',
-            modifiedBy: 'Administrator MOD',
-            extension: 'xlsx',
-        },
-        {
-            id: crypto.randomUUID(),
-            name: 'RevenueByServices2017.xlsx',
-            modified: 'A few seconds ago',
-            modifiedBy: 'Administrator MOD',
-            extension: 'xlsx',
-        },
-    ];
-}
-function mockFolderData() {
-    return [
-        {
-            id: crypto.randomUUID(),
-            name: 'CAS',
-            modified: 'April 30',
-            modifiedBy: 'Megan Bowen',
-            files: [],
-            subFolders: [],
-        },
-    ];
-}
-function initExplorer() {
-    const root = {
-        id: 'root',
-        name: 'Root',
-        modified: new Date().toISOString(),
-        modifiedBy: 'System',
-        files: mockFileData(),
-        subFolders: mockFolderData(),
-    };
-    saveExplorer(root);
-}
-function loadExplorer() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (data)
-        return JSON.parse(data);
-    initExplorer();
-    return loadExplorer();
-}
-function saveExplorer(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-
-/***/ }),
-
 /***/ "./src/scripts/utilities/services/FileService.ts":
 /*!*******************************************************!*\
   !*** ./src/scripts/utilities/services/FileService.ts ***!
@@ -8230,8 +8157,8 @@ class FileService {
         if (!files || files.length === 0)
             return;
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
-        const folder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
-        if (!folder)
+        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
+        if (!currentFolder)
             return;
         const upcomingFiles = [];
         for (const file of files) {
@@ -8241,17 +8168,19 @@ class FileService {
             }
             const fileData = {
                 id: crypto.randomUUID(),
-                name: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(folder, file.name),
+                name: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(currentFolder, file.name),
                 extension: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getFileExtension(file.name),
                 modified: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
+                isGlimmer: true,
             };
             upcomingFiles.push(fileData);
         }
         // prevent redundant save if no valid file to add
         if (upcomingFiles.length === 0)
             return;
-        folder.files.push(...upcomingFiles);
+        currentFolder.files.push(...upcomingFiles);
+        currentFolder.files.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
     static update(id, newName) {
@@ -8273,6 +8202,7 @@ class FileService {
         else
             newName = `${newName}.${item.extension}`;
         item.name = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(currentFolder, newName, item.id);
+        currentFolder.files.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
     static delete(id) {
@@ -8283,6 +8213,14 @@ class FileService {
         if (!currentFolder)
             return;
         currentFolder.files = currentFolder.files.filter((file) => file.id !== id);
+        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
+    }
+    static view(id) {
+        const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
+        const item = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getItemById(explorer, id);
+        if (!item)
+            return;
+        item.isGlimmer = false;
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
 }
@@ -8323,8 +8261,10 @@ class FolderService {
             modifiedBy: 'Administrator MOD',
             files: [],
             subFolders: [],
+            isGlimmer: true,
         };
         currentFolder.subFolders.push(newFolder);
+        currentFolder.subFolders.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
     static update(id, newName) {
@@ -8337,6 +8277,7 @@ class FolderService {
         if (!currentFolder)
             return;
         item.name = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFolderName(currentFolder, newName, item.id);
+        currentFolder.subFolders.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
     static delete(id) {
@@ -8359,6 +8300,14 @@ class FolderService {
             : folderName;
         _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.updateFolderPath(newPath);
     }
+    static view(id) {
+        const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
+        const item = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getItemById(explorer, id);
+        if (!item)
+            return;
+        item.isGlimmer = false;
+        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
+    }
 }
 
 
@@ -8378,55 +8327,61 @@ class StorageService {
     static mockFileData() {
         return [
             {
-                id: '1',
+                id: crypto.randomUUID(),
                 name: 'CoasterAndBargeLoading.xlsx',
                 modified: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
+                isGlimmer: true,
             },
             {
-                id: '2',
+                id: crypto.randomUUID(),
                 name: 'RevenueByServices.xlsx',
                 modified: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
+                isGlimmer: true,
             },
             {
-                id: '3',
+                id: crypto.randomUUID(),
                 name: 'RevenueByServices2016.xlsx',
                 modified: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
+                isGlimmer: true,
             },
             {
-                id: '4',
+                id: crypto.randomUUID(),
                 name: 'RevenueByServices2017.xlsx',
                 modified: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
+                isGlimmer: true,
             },
         ];
     }
     static mockFolderData() {
         return [
             {
-                id: '1',
+                id: crypto.randomUUID(),
                 name: 'CAS',
                 modified: new Date().toISOString(),
                 modifiedBy: 'Megan Bowen',
                 files: [],
                 subFolders: [],
+                isGlimmer: true,
             },
         ];
     }
     static initExplorer() {
         const root = {
-            id: 'root',
+            id: crypto.randomUUID(),
             name: 'Root',
             modified: new Date().toISOString(),
             modifiedBy: 'System',
             files: this.mockFileData(),
             subFolders: this.mockFolderData(),
+            isGlimmer: true,
         };
         this.saveExplorer(root);
     }

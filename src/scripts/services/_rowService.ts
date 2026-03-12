@@ -100,8 +100,16 @@ const bindRowService = () => {
         item.addEventListener('click', (e) => {
             e.stopPropagation();
 
-            const folderName = item.getAttribute('data-folder-name');
-            FolderService.navigateTo(folderName);
+            const id = item.getAttribute('data-item-id');
+            const name = item.getAttribute('data-item-name');
+            const type = item.getAttribute('data-item-type');
+
+            if (type === 'folder') {
+                FolderService.view(id);
+                FolderService.navigateTo(name);
+            } else {
+                FileService.view(id);
+            }
 
             renderGrid();
         });

@@ -7,4 +7,5 @@ export default interface IFolder {
     subFolders: IFolder[];
     modified: string;
     modifiedBy: string;
+    isGlimmer: boolean;
 }

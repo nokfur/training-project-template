@@ -8,32 +8,36 @@ export class StorageService {
     private static mockFileData(): IFile[] {
         return [
             {
-                id: '1',
+                id: crypto.randomUUID(),
                 name: 'CoasterAndBargeLoading.xlsx',
                 modified: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
+                isGlimmer: true,
             },
             {
-                id: '2',
+                id: crypto.randomUUID(),
                 name: 'RevenueByServices.xlsx',
                 modified: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
+                isGlimmer: true,
             },
             {
-                id: '3',
+                id: crypto.randomUUID(),
                 name: 'RevenueByServices2016.xlsx',
                 modified: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
+                isGlimmer: true,
             },
             {
-                id: '4',
+                id: crypto.randomUUID(),
                 name: 'RevenueByServices2017.xlsx',
                 modified: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
+                isGlimmer: true,
             },
         ];
     }
@@ -41,24 +45,26 @@ export class StorageService {
     private static mockFolderData(): IFolder[] {
         return [
             {
-                id: '1',
+                id: crypto.randomUUID(),
                 name: 'CAS',
                 modified: new Date().toISOString(),
                 modifiedBy: 'Megan Bowen',
                 files: [],
                 subFolders: [],
+                isGlimmer: true,
             },
         ];
     }
 
     private static initExplorer() {
         const root: IFolder = {
-            id: 'root',
+            id: crypto.randomUUID(),
             name: 'Root',
             modified: new Date().toISOString(),
             modifiedBy: 'System',
             files: this.mockFileData(),
             subFolders: this.mockFolderData(),
+            isGlimmer: true,
         };
         this.saveExplorer(root);
     }

@@ -3,7 +3,7 @@ import { FileExtension } from '../models/FileExtension';
 import IFile from '../models/IFile';
 import IFolder from '../models/IFolder';
 import { Helper } from '../utilities/_helper';
-import { loadExplorer } from '../utilities/_storage';
+import { StorageService } from '../utilities/services/StorageService';
 
 function getItemIcon(
     data: IFile | IFolder,
@@ -23,15 +23,18 @@ function getItemIcon(
     return itemIconMap[(data as IFile).extension];
 }
 
-function renderItemName(itemName: string, isFile: boolean): string {
-    return isFile
-        ? `<div class="position-relative d-inline-block explorer-item">
+function renderItemName(
+    data: IFile | IFolder,
+    type: ExplorerItemType,
+): string {
+    return data.isGlimmer
+        ? `<div class="position-relative d-inline-block explorer-item" data-item-id="${data.id}" data-item-name="${data.name}" data-item-type="${type}">
                 <iconify-icon icon="tabler:loader-quarter" class="fs-5 text-pink position-absolute -top-1 -left-2">
                 </iconify-icon>
 
-                ${itemName}
+                ${data.name}
             </div>`
-        : `<div class="d-inline-block explorer-item" data-folder-name="${itemName}">${itemName}</div>`;
+        : `<div class="d-inline-block explorer-item" data-item-id="${data.id}" data-item-name="${data.name}" data-item-type="${type}">${data.name}</div>`;
 }
 
 function renderRow(
@@ -50,7 +53,7 @@ function renderRow(
                     </div>
                 </td>
                 <td class="align-middle" data-label="Name">
-                    ${renderItemName(data.name, type === 'file')}
+                    ${renderItemName(data, type)}
                 </td>
                 <td data-label="Modified" class="text-secondary align-middle">
                     ${Helper.formatDate(data.modified)}
@@ -91,7 +94,7 @@ function renderCustomRowMessage(content: string): string {
 }
 
 const renderTableData = async () => {
-    const explorer = loadExplorer();
+    const explorer = StorageService.loadExplorer();
     const data = Helper.getCurrentFolder(explorer);
 
     const tableBody = document.querySelector('.table-body');
@@ -105,7 +108,7 @@ const renderTableData = async () => {
     `);
 
     // mock loading time
-    await Helper.delay(1000);
+    await Helper.delay(500);
 
     if (data === null) {
         tableBody.innerHTML = renderCustomRowMessage(

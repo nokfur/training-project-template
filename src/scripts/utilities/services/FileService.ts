@@ -18,8 +18,8 @@ export class FileService {
         if (!files || files.length === 0) return;
 
         const explorer = StorageService.loadExplorer();
-        const folder = Helper.getCurrentFolder(explorer);
-        if (!folder) return;
+        const currentFolder = Helper.getCurrentFolder(explorer);
+        if (!currentFolder) return;
 
         const upcomingFiles: IFile[] = [];
         for (const file of files) {
@@ -32,10 +32,14 @@ export class FileService {
 
             const fileData: IFile = {
                 id: crypto.randomUUID(),
-                name: Helper.getUniqueFileName(folder, file.name),
+                name: Helper.getUniqueFileName(
+                    currentFolder,
+                    file.name,
+                ),
                 extension: Helper.getFileExtension(file.name),
                 modified: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
+                isGlimmer: true,
             };
 
             upcomingFiles.push(fileData);
@@ -44,7 +48,11 @@ export class FileService {
         // prevent redundant save if no valid file to add
         if (upcomingFiles.length === 0) return;
 
-        folder.files.push(...upcomingFiles);
+        currentFolder.files.push(...upcomingFiles);
+        currentFolder.files.sort((a, b) =>
+            a.name.localeCompare(b.name),
+        );
+
         StorageService.saveExplorer(explorer);
     }
 
@@ -75,6 +83,10 @@ export class FileService {
             newName,
             item.id,
         );
+
+        currentFolder.files.sort((a, b) =>
+            a.name.localeCompare(b.name),
+        );
         StorageService.saveExplorer(explorer);
     }
 
@@ -88,6 +100,16 @@ export class FileService {
         currentFolder.files = currentFolder.files.filter(
             (file) => file.id !== id,
         );
+        StorageService.saveExplorer(explorer);
+    }
+
+    static view(id: string) {
+        const explorer = StorageService.loadExplorer();
+        const item = Helper.getItemById(explorer, id);
+
+        if (!item) return;
+
+        item.isGlimmer = false;
         StorageService.saveExplorer(explorer);
     }
 }

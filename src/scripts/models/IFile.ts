@@ -1,4 +1,4 @@
-import {FileExtension} from './FileExtension';
+import { FileExtension } from './FileExtension';
 
 export default interface IFile {
     id: string;
@@ -6,4 +6,5 @@ export default interface IFile {
     extension: FileExtension;
     modified: string;
     modifiedBy: string;
+    isGlimmer: boolean;
 }

@@ -23,9 +23,14 @@ export class FolderService {
             modifiedBy: 'Administrator MOD',
             files: [],
             subFolders: [],
+            isGlimmer: true,
         };
 
         currentFolder.subFolders.push(newFolder);
+        currentFolder.subFolders.sort((a, b) =>
+            a.name.localeCompare(b.name),
+        );
+
         StorageService.saveExplorer(explorer);
     }
 
@@ -46,6 +51,9 @@ export class FolderService {
             item.id,
         );
 
+        currentFolder.subFolders.sort((a, b) =>
+            a.name.localeCompare(b.name),
+        );
         StorageService.saveExplorer(explorer);
     }
 
@@ -73,5 +81,15 @@ export class FolderService {
             : folderName;
 
         Helper.updateFolderPath(newPath);
+    }
+
+    static view(id: string) {
+        const explorer = StorageService.loadExplorer();
+        const item = Helper.getItemById(explorer, id);
+
+        if (!item) return;
+
+        item.isGlimmer = false;
+        StorageService.saveExplorer(explorer);
     }
 }
