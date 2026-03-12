@@ -23,22 +23,44 @@
                 <div class="collapse navbar-collapse border-top" id="navbarSupportedContent">
                     <ul class="navbar-nav bg-light py-1">
                         <li class="nav-item">
-                            <button type="button" class="btn px-3 d-flex align-items-center w-100 gap-1 border-0"
-                                aria-label="menu" id="newFolderBtn">
-                                <iconify-icon icon="bitcoin-icons:plus-filled" class="fs-5 text-pink"></iconify-icon>
-                                <span>New</span>
-                                <iconify-icon icon="oui:arrow-down" class="fs-6"></iconify-icon>
-                            </button>
+                            <div class="drop-down">
+                                <button type="button"
+                                    class="dropdown-toggle btn px-3 d-flex align-items-center w-100 gap-1 border-0"
+                                    aria-label="menu" data-bs-toggle="dropdown">
+                                    <iconify-icon icon="bitcoin-icons:plus-filled"
+                                        class="fs-5 text-pink"></iconify-icon>
+                                    <span>New</span>
+                                    <iconify-icon icon="oui:arrow-down" class="fs-6"></iconify-icon>
+                                </button>
+
+                                <ul class="dropdown-menu m-2">
+                                    <li>
+                                        <button class="dropdown-item d-flex align-items-center gap-2" type="button"
+                                            id="newFolderBtn">
+                                            <iconify-icon icon="flat-color-icons:folder" class="fs-5"></iconify-icon>
+                                            <span>New Folder</span>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button class="dropdown-item d-flex align-items-center gap-2" type="button"
+                                            id="newFileBtn">
+                                            <iconify-icon icon="streamline-color:new-file-flat"
+                                                class="fs-5"></iconify-icon>
+                                            <span>New File</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
 
                         <li class="nav-item">
-                            <label for="fileUploadBtn" class="btn px-3 d-flex align-items-center w-100 gap-1 border-0"
+                            <label for="itemUploadBtn" class="btn px-3 d-flex align-items-center w-100 gap-1 border-0"
                                 aria-label="menu">
                                 <iconify-icon icon="fluent-mdl2:upload" class="fs-5 text-pink"></iconify-icon>
                                 <span>Upload</span>
                                 <iconify-icon icon="oui:arrow-down" class="fs-6"></iconify-icon>
                             </label>
-                            <input type="file" id="fileUploadBtn" multiple class="d-none" />
+                            <input type="file" id="itemUploadBtn" multiple class="d-none" />
                         </li>
 
                         <li class="nav-item ">

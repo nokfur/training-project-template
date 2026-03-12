@@ -1,12 +1,9 @@
-import renderGrid from '../components/_grid';
 import bindBreadCrumbService from './_breadCrumbService';
-import bindFileService from './_fileService';
-import bindFolderService from './_folderService';
+import bindNavService from './_navService';
 import bindRowService from './_rowService';
 
 const bindEventServices = () => {
-    bindFileService();
-    bindFolderService();
+    bindNavService();
     bindBreadCrumbService();
     bindRowService();
 };

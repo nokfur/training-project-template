@@ -7482,6 +7482,7 @@ function getItemIcon(data, type) {
         xlsx: 'vscode-icons:file-type-excel',
         docs: 'vscode-icons:file-type-word',
         pptx: 'vscode-icons:file-type-powerpoint2',
+        txt: 'icon-park-outline:file-txt-one',
     };
     if (type === 'folder') {
         return itemIconMap[type];
@@ -7688,7 +7689,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   FILE_EXTENSIONS: function() { return /* binding */ FILE_EXTENSIONS; }
 /* harmony export */ });
-const FILE_EXTENSIONS = ["xlsx", "docs", "pptx"];
+const FILE_EXTENSIONS = ['xlsx', 'docs', 'pptx', 'txt'];
 
 
 /***/ }),
@@ -7812,56 +7813,54 @@ const bindBreadCrumbService = () => {
 
 /***/ }),
 
-/***/ "./src/scripts/services/_fileService.ts":
-/*!**********************************************!*\
-  !*** ./src/scripts/services/_fileService.ts ***!
-  \**********************************************/
+/***/ "./src/scripts/services/_navService.ts":
+/*!*********************************************!*\
+  !*** ./src/scripts/services/_navService.ts ***!
+  \*********************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
-/* harmony import */ var _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/services/FileService */ "./src/scripts/utilities/services/FileService.ts");
+/* harmony import */ var _models_InputModal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/InputModal */ "./src/scripts/models/InputModal.ts");
+/* harmony import */ var _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/services/FileService */ "./src/scripts/utilities/services/FileService.ts");
+/* harmony import */ var _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utilities/services/FolderService */ "./src/scripts/utilities/services/FolderService.ts");
 
 
+
+
+function handleCreateFolder() {
+    const inputModal = new _models_InputModal__WEBPACK_IMPORTED_MODULE_1__.InputModal();
+    inputModal.prompt('Enter item name', (name) => {
+        _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_3__.FolderService.create(name);
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    });
+}
+function handleCreateFile() {
+    const inputModal = new _models_InputModal__WEBPACK_IMPORTED_MODULE_1__.InputModal();
+    inputModal.prompt('Enter item name', (name) => {
+        _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__.FileService.create(name);
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    });
+}
 function handleUpload(e) {
     const input = e.target;
-    _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_1__.FileService.upload(input.files);
+    _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__.FileService.upload(input.files);
     // reset file input to allow uploading same file again if needed
     input.value = '';
     (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
 }
-const bindFileService = () => {
-    const uploadBtn = document.querySelector('#fileUploadBtn');
+const bindNavService = () => {
+    const uploadBtn = document.querySelector('#itemUploadBtn');
+    const createFolderBtn = document.querySelector('#newFolderBtn');
+    const createFileBtn = document.querySelector('#newFileBtn');
     uploadBtn?.removeEventListener('change', handleUpload);
     uploadBtn?.addEventListener('change', handleUpload);
-};
-/* harmony default export */ __webpack_exports__["default"] = (bindFileService);
-
-
-/***/ }),
-
-/***/ "./src/scripts/services/_folderService.ts":
-/*!************************************************!*\
-  !*** ./src/scripts/services/_folderService.ts ***!
-  \************************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
-/* harmony import */ var _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utilities/services/FolderService */ "./src/scripts/utilities/services/FolderService.ts");
-
-
-function handleCreateFolder() {
-    const folderName = prompt('Enter folder name:');
-    _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_1__.FolderService.create(folderName);
-    (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
-}
-const bindFolderService = () => {
-    const createFolderBtn = document.querySelector('#newFolderBtn');
     createFolderBtn?.removeEventListener('click', handleCreateFolder);
     createFolderBtn?.addEventListener('click', handleCreateFolder);
+    createFileBtn?.removeEventListener('click', handleCreateFile);
+    createFileBtn?.addEventListener('click', handleCreateFile);
 };
-/* harmony default export */ __webpack_exports__["default"] = (bindFolderService);
+/* harmony default export */ __webpack_exports__["default"] = (bindNavService);
 
 
 /***/ }),
@@ -7983,18 +7982,15 @@ const bindRowService = () => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _breadCrumbService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./_breadCrumbService */ "./src/scripts/services/_breadCrumbService.ts");
-/* harmony import */ var _fileService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_fileService */ "./src/scripts/services/_fileService.ts");
-/* harmony import */ var _folderService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_folderService */ "./src/scripts/services/_folderService.ts");
-/* harmony import */ var _rowService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_rowService */ "./src/scripts/services/_rowService.ts");
-
+/* harmony import */ var _navService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./_navService */ "./src/scripts/services/_navService.ts");
+/* harmony import */ var _rowService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_rowService */ "./src/scripts/services/_rowService.ts");
 
 
 
 const bindEventServices = () => {
-    (0,_fileService__WEBPACK_IMPORTED_MODULE_1__["default"])();
-    (0,_folderService__WEBPACK_IMPORTED_MODULE_2__["default"])();
+    (0,_navService__WEBPACK_IMPORTED_MODULE_1__["default"])();
     (0,_breadCrumbService__WEBPACK_IMPORTED_MODULE_0__["default"])();
-    (0,_rowService__WEBPACK_IMPORTED_MODULE_3__["default"])();
+    (0,_rowService__WEBPACK_IMPORTED_MODULE_2__["default"])();
 };
 /* harmony default export */ __webpack_exports__["default"] = (bindEventServices);
 
@@ -8153,6 +8149,30 @@ class FileService {
             return false;
         return true;
     }
+    static create(name) {
+        name = name.trim();
+        if (!name)
+            return;
+        if (!this.isValidFileName(name)) {
+            alert(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', ')} allowed.`);
+            return;
+        }
+        const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
+        const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
+        if (!currentFolder)
+            return;
+        const newFile = {
+            id: crypto.randomUUID(),
+            name: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(currentFolder, name),
+            extension: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getFileExtension(name),
+            modified: new Date().toISOString(),
+            modifiedBy: 'Administrator MOD',
+            isGlimmer: true,
+        };
+        currentFolder.files.push(newFile);
+        currentFolder.files.sort((a, b) => a.name.localeCompare(b.name));
+        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
+    }
     static upload(files) {
         if (!files || files.length === 0)
             return;
@@ -8199,8 +8219,11 @@ class FileService {
             }
             item.extension = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getFileExtension(newName);
         }
-        else
-            newName = `${newName}.${item.extension}`;
+        else {
+            // default to .txt if no extension provided
+            newName = `${newName}.txt`;
+            item.extension = 'txt';
+        }
         item.name = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(currentFolder, newName, item.id);
         currentFolder.files.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);

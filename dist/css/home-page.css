@@ -12193,6 +12193,10 @@ textarea.form-control-lg {
   cursor: pointer;
 }
 
+.dropdown-toggle::after {
+  display: none;
+}
+
 .table-body tr:hover input[type=checkbox],
 .table-body tr input[type=checkbox]:checked {
   opacity: 1 !important;

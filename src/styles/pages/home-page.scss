@@ -36,6 +36,10 @@
     }
 }
 
+.dropdown-toggle::after {
+    display: none;
+}
+
 .table-body {
     tr {
         &:hover input[type='checkbox'],

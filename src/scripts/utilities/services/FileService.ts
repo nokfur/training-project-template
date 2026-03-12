@@ -14,6 +14,39 @@ export class FileService {
         return true;
     }
 
+    static create(name: string) {
+        name = name.trim();
+
+        if (!name) return;
+        if (!this.isValidFileName(name)) {
+            alert(
+                `Unsupported file type. Only ${FILE_EXTENSIONS.join(', ')} allowed.`,
+            );
+            return;
+        }
+
+        const explorer = StorageService.loadExplorer();
+        const currentFolder = Helper.getCurrentFolder(explorer);
+
+        if (!currentFolder) return;
+
+        const newFile: IFile = {
+            id: crypto.randomUUID(),
+            name: Helper.getUniqueFileName(currentFolder, name),
+            extension: Helper.getFileExtension(name),
+            modified: new Date().toISOString(),
+            modifiedBy: 'Administrator MOD',
+            isGlimmer: true,
+        };
+
+        currentFolder.files.push(newFile);
+        currentFolder.files.sort((a, b) =>
+            a.name.localeCompare(b.name),
+        );
+
+        StorageService.saveExplorer(explorer);
+    }
+
     static upload(files: FileList) {
         if (!files || files.length === 0) return;
 
@@ -76,7 +109,11 @@ export class FileService {
             }
 
             item.extension = Helper.getFileExtension(newName);
-        } else newName = `${newName}.${item.extension}`;
+        } else {
+            // default to .txt if no extension provided
+            newName = `${newName}.txt`;
+            item.extension = 'txt';
+        }
 
         item.name = Helper.getUniqueFileName(
             currentFolder,

@@ -14,6 +14,7 @@ function getItemIcon(
         xlsx: 'vscode-icons:file-type-excel',
         docs: 'vscode-icons:file-type-word',
         pptx: 'vscode-icons:file-type-powerpoint2',
+        txt: 'icon-park-outline:file-txt-one',
     };
 
     if (type === 'folder') {
