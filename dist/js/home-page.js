@@ -7580,10 +7580,10 @@ const renderTableData = async () => {
 
 /***/ }),
 
-/***/ "./src/scripts/models/BaseModal.ts":
-/*!*****************************************!*\
-  !*** ./src/scripts/models/BaseModal.ts ***!
-  \*****************************************/
+/***/ "./src/scripts/components/modals/BaseModal.ts":
+/*!****************************************************!*\
+  !*** ./src/scripts/components/modals/BaseModal.ts ***!
+  \****************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
@@ -7598,7 +7598,7 @@ class BaseModal {
         this.element = wrapper.firstElementChild;
         document.body.insertAdjacentElement('beforeend', this.element);
         this.modal = new Modal(this.element);
-        // Remove modal after it closes
+        // Remove modal from DOM after it closes
         this.element.addEventListener('hidden.bs.modal', () => {
             this.destroy();
         });
@@ -7619,17 +7619,17 @@ class BaseModal {
 
 /***/ }),
 
-/***/ "./src/scripts/models/ConfirmModal.ts":
-/*!********************************************!*\
-  !*** ./src/scripts/models/ConfirmModal.ts ***!
-  \********************************************/
+/***/ "./src/scripts/components/modals/ConfirmModal.ts":
+/*!*******************************************************!*\
+  !*** ./src/scripts/components/modals/ConfirmModal.ts ***!
+  \*******************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   ConfirmModal: function() { return /* binding */ ConfirmModal; }
 /* harmony export */ });
-/* harmony import */ var _BaseModal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseModal */ "./src/scripts/models/BaseModal.ts");
+/* harmony import */ var _BaseModal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseModal */ "./src/scripts/components/modals/BaseModal.ts");
 
 class ConfirmModal extends _BaseModal__WEBPACK_IMPORTED_MODULE_0__.BaseModal {
     template() {
@@ -7665,8 +7665,9 @@ class ConfirmModal extends _BaseModal__WEBPACK_IMPORTED_MODULE_0__.BaseModal {
         this.messageEl = this.element.querySelector('.confirm-message');
         this.okBtn = this.element.querySelector('.confirm-ok');
         this.okBtn.addEventListener('click', () => {
-            this.callback?.();
-            this.hide();
+            this.callback?.()
+                .then(() => this.hide())
+                .catch((err) => alert(err.message));
         });
     }
     confirm(message, callback) {
@@ -7679,32 +7680,17 @@ class ConfirmModal extends _BaseModal__WEBPACK_IMPORTED_MODULE_0__.BaseModal {
 
 /***/ }),
 
-/***/ "./src/scripts/models/FileExtension.ts":
-/*!*********************************************!*\
-  !*** ./src/scripts/models/FileExtension.ts ***!
-  \*********************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   FILE_EXTENSIONS: function() { return /* binding */ FILE_EXTENSIONS; }
-/* harmony export */ });
-const FILE_EXTENSIONS = ['xlsx', 'docs', 'pptx', 'txt'];
-
-
-/***/ }),
-
-/***/ "./src/scripts/models/InputModal.ts":
-/*!******************************************!*\
-  !*** ./src/scripts/models/InputModal.ts ***!
-  \******************************************/
+/***/ "./src/scripts/components/modals/InputModal.ts":
+/*!*****************************************************!*\
+  !*** ./src/scripts/components/modals/InputModal.ts ***!
+  \*****************************************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   InputModal: function() { return /* binding */ InputModal; }
 /* harmony export */ });
-/* harmony import */ var _BaseModal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseModal */ "./src/scripts/models/BaseModal.ts");
+/* harmony import */ var _BaseModal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BaseModal */ "./src/scripts/components/modals/BaseModal.ts");
 
 class InputModal extends _BaseModal__WEBPACK_IMPORTED_MODULE_0__.BaseModal {
     template() {
@@ -7785,6 +7771,21 @@ class InputModal extends _BaseModal__WEBPACK_IMPORTED_MODULE_0__.BaseModal {
 
 /***/ }),
 
+/***/ "./src/scripts/models/FileExtension.ts":
+/*!*********************************************!*\
+  !*** ./src/scripts/models/FileExtension.ts ***!
+  \*********************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   FILE_EXTENSIONS: function() { return /* binding */ FILE_EXTENSIONS; }
+/* harmony export */ });
+const FILE_EXTENSIONS = ['xlsx', 'docs', 'pptx', 'txt'];
+
+
+/***/ }),
+
 /***/ "./src/scripts/services/_breadCrumbService.ts":
 /*!****************************************************!*\
   !*** ./src/scripts/services/_breadCrumbService.ts ***!
@@ -7820,7 +7821,7 @@ const bindBreadCrumbService = () => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
-/* harmony import */ var _models_InputModal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/InputModal */ "./src/scripts/models/InputModal.ts");
+/* harmony import */ var _components_modals_InputModal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/modals/InputModal */ "./src/scripts/components/modals/InputModal.ts");
 /* harmony import */ var _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/services/FileService */ "./src/scripts/utilities/services/FileService.ts");
 /* harmony import */ var _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utilities/services/FolderService */ "./src/scripts/utilities/services/FolderService.ts");
 
@@ -7828,14 +7829,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function handleCreateFolder() {
-    const inputModal = new _models_InputModal__WEBPACK_IMPORTED_MODULE_1__.InputModal();
+    const inputModal = new _components_modals_InputModal__WEBPACK_IMPORTED_MODULE_1__.InputModal();
     inputModal.prompt('Enter folder name', async (name) => {
         await _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_3__.FolderService.create(name);
         (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
     });
 }
 function handleCreateFile() {
-    const inputModal = new _models_InputModal__WEBPACK_IMPORTED_MODULE_1__.InputModal();
+    const inputModal = new _components_modals_InputModal__WEBPACK_IMPORTED_MODULE_1__.InputModal();
     inputModal.prompt('Enter file name', async (name) => {
         await _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__.FileService.create(name);
         (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
@@ -7879,8 +7880,8 @@ const bindNavService = () => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/_grid */ "./src/scripts/components/_grid.ts");
-/* harmony import */ var _models_ConfirmModal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../models/ConfirmModal */ "./src/scripts/models/ConfirmModal.ts");
-/* harmony import */ var _models_InputModal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../models/InputModal */ "./src/scripts/models/InputModal.ts");
+/* harmony import */ var _components_modals_ConfirmModal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/modals/ConfirmModal */ "./src/scripts/components/modals/ConfirmModal.ts");
+/* harmony import */ var _components_modals_InputModal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/modals/InputModal */ "./src/scripts/components/modals/InputModal.ts");
 /* harmony import */ var _utilities_helper__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utilities/_helper */ "./src/scripts/utilities/_helper.ts");
 /* harmony import */ var _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utilities/services/FileService */ "./src/scripts/utilities/services/FileService.ts");
 /* harmony import */ var _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../utilities/services/FolderService */ "./src/scripts/utilities/services/FolderService.ts");
@@ -7894,7 +7895,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function handleRename(selectedItemId, itemType) {
     const item = _utilities_helper__WEBPACK_IMPORTED_MODULE_3__.Helper.getItemById(_utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_6__.StorageService.loadExplorer(), selectedItemId);
-    const inputModal = new _models_InputModal__WEBPACK_IMPORTED_MODULE_2__.InputModal();
+    const inputModal = new _components_modals_InputModal__WEBPACK_IMPORTED_MODULE_2__.InputModal();
     inputModal.prompt(`Enter new ${itemType} name:`, async (newName) => {
         if (itemType === 'folder')
             await _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.update(selectedItemId, newName);
@@ -7905,16 +7906,13 @@ function handleRename(selectedItemId, itemType) {
 }
 function handleDelete(selectedItemId, itemType) {
     const item = _utilities_helper__WEBPACK_IMPORTED_MODULE_3__.Helper.getItemById(_utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_6__.StorageService.loadExplorer(), selectedItemId);
-    const confirmModal = new _models_ConfirmModal__WEBPACK_IMPORTED_MODULE_1__.ConfirmModal();
-    confirmModal.confirm(`Are you sure you want to delete the ${itemType} "${item.name}"?`, () => {
+    const confirmModal = new _components_modals_ConfirmModal__WEBPACK_IMPORTED_MODULE_1__.ConfirmModal();
+    confirmModal.confirm(`Are you sure you want to delete the ${itemType} "${item.name}"?`, async () => {
         if (itemType === 'folder')
-            _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.delete(selectedItemId)
-                .then(() => (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])())
-                .catch((error) => alert(error.message));
+            await _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.delete(selectedItemId);
         else if (itemType === 'file')
-            _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__.FileService.delete(selectedItemId)
-                .then(() => (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])())
-                .catch((error) => alert(error.message));
+            await _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__.FileService.delete(selectedItemId);
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
     });
 }
 function toggleRowSelection(row, e) {

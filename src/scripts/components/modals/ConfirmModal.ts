@@ -4,7 +4,7 @@ export class ConfirmModal extends BaseModal {
     private messageEl!: HTMLElement;
     private okBtn!: HTMLButtonElement;
 
-    private callback?: () => void;
+    private callback?: () => Promise<void>;
 
     protected template(): string {
         return `
@@ -43,12 +43,13 @@ export class ConfirmModal extends BaseModal {
         this.okBtn = this.element.querySelector('.confirm-ok')!;
 
         this.okBtn.addEventListener('click', () => {
-            this.callback?.();
-            this.hide();
+            this.callback?.()
+                .then(() => this.hide())
+                .catch((err) => alert(err.message));
         });
     }
 
-    confirm(message: string, callback: () => void) {
+    confirm(message: string, callback: () => Promise<void>) {
         this.messageEl.textContent = message;
         this.callback = callback;
 

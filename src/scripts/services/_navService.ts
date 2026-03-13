@@ -1,5 +1,5 @@
 import renderGrid from '../components/_grid';
-import { InputModal } from '../models/InputModal';
+import { InputModal } from '../components/modals/InputModal';
 import { FileService } from '../utilities/services/FileService';
 import { FolderService } from '../utilities/services/FolderService';
 

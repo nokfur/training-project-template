@@ -1,7 +1,7 @@
 import renderGrid from '../components/_grid';
-import { ConfirmModal } from '../models/ConfirmModal';
+import { ConfirmModal } from '../components/modals/ConfirmModal';
 import { ExplorerItemType } from '../models/ExplorerItemType';
-import { InputModal } from '../models/InputModal';
+import { InputModal } from '../components/modals/InputModal';
 import { Helper } from '../utilities/_helper';
 import { FileService } from '../utilities/services/FileService';
 import { FolderService } from '../utilities/services/FolderService';
@@ -42,15 +42,13 @@ function handleDelete(
     const confirmModal = new ConfirmModal();
     confirmModal.confirm(
         `Are you sure you want to delete the ${itemType} "${item.name}"?`,
-        () => {
+        async () => {
             if (itemType === 'folder')
-                FolderService.delete(selectedItemId)
-                    .then(() => renderGrid())
-                    .catch((error) => alert(error.message));
+                await FolderService.delete(selectedItemId);
             else if (itemType === 'file')
-                FileService.delete(selectedItemId)
-                    .then(() => renderGrid())
-                    .catch((error) => alert(error.message));
+                await FileService.delete(selectedItemId);
+
+            renderGrid();
         },
     );
 }

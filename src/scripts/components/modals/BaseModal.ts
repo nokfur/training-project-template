@@ -17,7 +17,7 @@ export abstract class BaseModal {
 
         this.modal = new Modal(this.element);
 
-        // Remove modal after it closes
+        // Remove modal from DOM after it closes
         this.element.addEventListener('hidden.bs.modal', () => {
             this.destroy();
         });
