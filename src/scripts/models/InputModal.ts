@@ -5,7 +5,7 @@ export class InputModal extends BaseModal {
     private inputEl!: HTMLInputElement;
     private okBtn!: HTMLButtonElement;
 
-    private callback?: (value: string) => void;
+    private callback?: (value: string) => Promise<void>;
 
     protected template(): string {
         return `
@@ -27,7 +27,6 @@ export class InputModal extends BaseModal {
                 />
 
                 <div class="text-danger small mt-2 input-error d-none">
-                    Value cannot be empty
                 </div>
               </div>
 
@@ -56,14 +55,13 @@ export class InputModal extends BaseModal {
         this.okBtn.addEventListener('click', () => {
             const value = this.inputEl.value.trim();
 
-            if (!value) {
-                errorEl.classList.remove('d-none');
-                this.inputEl.focus();
-                return;
-            }
-
-            this.callback?.(value);
-            this.hide();
+            this.callback?.(value)
+                .then(() => this.hide())
+                .catch((error) => {
+                    errorEl.textContent = error.message;
+                    errorEl.classList.remove('d-none');
+                    this.inputEl.focus();
+                });
         });
 
         // remove error when typing
@@ -81,7 +79,7 @@ export class InputModal extends BaseModal {
 
     prompt(
         message: string,
-        callback: (value: string) => void,
+        callback: (value: string) => Promise<void>,
         defaultValue = '',
     ) {
         this.messageEl.textContent = message;

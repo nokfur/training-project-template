@@ -86,7 +86,7 @@ function renderCustomRowMessage(content: string): string {
         document.querySelectorAll('thead th').length || 6;
 
     return `<tr>
-                <td colspan="${colCount}">
+                <td colspan="${colCount}" class="custom-row">
                     <div class="d-flex justify-content-center align-items-center my-4">
                         ${content}
                     </div>

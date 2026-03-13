@@ -59,51 +59,52 @@
             display: none;
         }
 
-        tr {
-            display: flex;
-            width: 100%;
-            flex-direction: column;
-            border-radius: map-get($spacers, 2);
-            background-color: $gray-200;
-            margin-bottom: map-get($spacers, 4);
-            gap: map-get($spacers, 1);
-            padding: map-get($spacers, 1);
-        }
-
-        td {
-            display: flex;
-            background-color: white;
-            align-items: center;
-            color: initial !important;
-
-            &:nth-child(2) {
-                background-color: $gray-200;
-                justify-content: space-between !important;
-            }
-
-            &:first-child,
-            &:last-child {
-                display: none;
-            }
-
-            &::before {
-                content: attr(data-label);
-                font-weight: bold;
-                font-style: italic;
-                display: inline-block;
-                width: 20%;
-                min-width: fit-content;
-                text-align: left !important;
-                margin-right: map-get($spacers, 3);
-            }
-        }
-    }
-
-    .table-body {
-        border-style: none !important;
-
-        & td {
+        .table-body {
             border-style: none !important;
+
+            tr {
+                display: flex;
+                width: 100%;
+                flex-direction: column;
+                border-radius: map-get($spacers, 2);
+                background-color: $gray-200;
+                margin-bottom: map-get($spacers, 4);
+                gap: map-get($spacers, 1);
+                padding: map-get($spacers, 1);
+            }
+
+            td {
+                display: flex;
+                background-color: white;
+                align-items: center;
+                color: initial !important;
+                border-style: none !important;
+
+                &:nth-child(2) {
+                    background-color: $gray-200;
+                    justify-content: space-between !important;
+                }
+
+                &:first-child,
+                &:last-child {
+                    display: none;
+                }
+
+                &::before {
+                    content: attr(data-label);
+                    font-weight: bold;
+                    font-style: italic;
+                    display: inline-block;
+                    width: 20%;
+                    min-width: fit-content;
+                    text-align: left !important;
+                    margin-right: map-get($spacers, 3);
+                }
+            }
+
+            .custom-row {
+                display: contents !important;
+            }
         }
     }
 }

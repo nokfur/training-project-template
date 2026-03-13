@@ -12209,7 +12209,10 @@ textarea.form-control-lg {
   .table thead {
     display: none;
   }
-  .table tr {
+  .table .table-body {
+    border-style: none !important;
+  }
+  .table .table-body tr {
     display: flex;
     width: 100%;
     flex-direction: column;
@@ -12219,20 +12222,21 @@ textarea.form-control-lg {
     gap: 0.25rem;
     padding: 0.25rem;
   }
-  .table td {
+  .table .table-body td {
     display: flex;
     background-color: white;
     align-items: center;
     color: initial !important;
+    border-style: none !important;
   }
-  .table td:nth-child(2) {
+  .table .table-body td:nth-child(2) {
     background-color: #e9ecef;
     justify-content: space-between !important;
   }
-  .table td:first-child, .table td:last-child {
+  .table .table-body td:first-child, .table .table-body td:last-child {
     display: none;
   }
-  .table td::before {
+  .table .table-body td::before {
     content: attr(data-label);
     font-weight: bold;
     font-style: italic;
@@ -12243,11 +12247,8 @@ textarea.form-control-lg {
     text-align: left !important;
     margin-right: 1rem;
   }
-  .table-body {
-    border-style: none !important;
-  }
-  .table-body td {
-    border-style: none !important;
+  .table .table-body .custom-row {
+    display: contents !important;
   }
 }
 

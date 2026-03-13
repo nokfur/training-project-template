@@ -15,16 +15,14 @@ function handleRename(
         StorageService.loadExplorer(),
         selectedItemId,
     );
-    console.log(item);
-
     const inputModal = new InputModal();
     inputModal.prompt(
         `Enter new ${itemType} name:`,
-        (newName) => {
+        async (newName) => {
             if (itemType === 'folder')
-                FolderService.update(selectedItemId, newName);
+                await FolderService.update(selectedItemId, newName);
             else if (itemType === 'file')
-                FileService.update(selectedItemId, newName);
+                await FileService.update(selectedItemId, newName);
 
             renderGrid();
         },
@@ -46,11 +44,13 @@ function handleDelete(
         `Are you sure you want to delete the ${itemType} "${item.name}"?`,
         () => {
             if (itemType === 'folder')
-                FolderService.delete(selectedItemId);
+                FolderService.delete(selectedItemId)
+                    .then(() => renderGrid())
+                    .catch((error) => alert(error.message));
             else if (itemType === 'file')
-                FileService.delete(selectedItemId);
-
-            renderGrid();
+                FileService.delete(selectedItemId)
+                    .then(() => renderGrid())
+                    .catch((error) => alert(error.message));
         },
     );
 }

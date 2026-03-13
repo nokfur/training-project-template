@@ -7541,7 +7541,7 @@ function renderRow(data, type) {
 function renderCustomRowMessage(content) {
     const colCount = document.querySelectorAll('thead th').length || 6;
     return `<tr>
-                <td colspan="${colCount}">
+                <td colspan="${colCount}" class="custom-row">
                     <div class="d-flex justify-content-center align-items-center my-4">
                         ${content}
                     </div>
@@ -7727,7 +7727,6 @@ class InputModal extends _BaseModal__WEBPACK_IMPORTED_MODULE_0__.BaseModal {
                 />
 
                 <div class="text-danger small mt-2 input-error d-none">
-                    Value cannot be empty
                 </div>
               </div>
 
@@ -7753,13 +7752,13 @@ class InputModal extends _BaseModal__WEBPACK_IMPORTED_MODULE_0__.BaseModal {
         const errorEl = this.element.querySelector('.input-error');
         this.okBtn.addEventListener('click', () => {
             const value = this.inputEl.value.trim();
-            if (!value) {
+            this.callback?.(value)
+                .then(() => this.hide())
+                .catch((error) => {
+                errorEl.textContent = error.message;
                 errorEl.classList.remove('d-none');
                 this.inputEl.focus();
-                return;
-            }
-            this.callback?.(value);
-            this.hide();
+            });
         });
         // remove error when typing
         this.inputEl.addEventListener('input', () => {
@@ -7830,24 +7829,31 @@ __webpack_require__.r(__webpack_exports__);
 
 function handleCreateFolder() {
     const inputModal = new _models_InputModal__WEBPACK_IMPORTED_MODULE_1__.InputModal();
-    inputModal.prompt('Enter item name', (name) => {
-        _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_3__.FolderService.create(name);
+    inputModal.prompt('Enter folder name', async (name) => {
+        await _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_3__.FolderService.create(name);
         (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
     });
 }
 function handleCreateFile() {
     const inputModal = new _models_InputModal__WEBPACK_IMPORTED_MODULE_1__.InputModal();
-    inputModal.prompt('Enter item name', (name) => {
-        _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__.FileService.create(name);
+    inputModal.prompt('Enter file name', async (name) => {
+        await _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__.FileService.create(name);
         (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
     });
 }
 function handleUpload(e) {
     const input = e.target;
-    _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__.FileService.upload(input.files);
-    // reset file input to allow uploading same file again if needed
-    input.value = '';
-    (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_2__.FileService.upload(input.files)
+        .then(() => {
+        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+    })
+        .catch((error) => {
+        alert(error.message);
+    })
+        .finally(() => {
+        // reset file input to allow uploading same file again if needed
+        input.value = '';
+    });
 }
 const bindNavService = () => {
     const uploadBtn = document.querySelector('#itemUploadBtn');
@@ -7888,13 +7894,12 @@ __webpack_require__.r(__webpack_exports__);
 
 function handleRename(selectedItemId, itemType) {
     const item = _utilities_helper__WEBPACK_IMPORTED_MODULE_3__.Helper.getItemById(_utilities_services_StorageService__WEBPACK_IMPORTED_MODULE_6__.StorageService.loadExplorer(), selectedItemId);
-    console.log(item);
     const inputModal = new _models_InputModal__WEBPACK_IMPORTED_MODULE_2__.InputModal();
-    inputModal.prompt(`Enter new ${itemType} name:`, (newName) => {
+    inputModal.prompt(`Enter new ${itemType} name:`, async (newName) => {
         if (itemType === 'folder')
-            _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.update(selectedItemId, newName);
+            await _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.update(selectedItemId, newName);
         else if (itemType === 'file')
-            _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__.FileService.update(selectedItemId, newName);
+            await _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__.FileService.update(selectedItemId, newName);
         (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
     }, item.name);
 }
@@ -7903,10 +7908,13 @@ function handleDelete(selectedItemId, itemType) {
     const confirmModal = new _models_ConfirmModal__WEBPACK_IMPORTED_MODULE_1__.ConfirmModal();
     confirmModal.confirm(`Are you sure you want to delete the ${itemType} "${item.name}"?`, () => {
         if (itemType === 'folder')
-            _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.delete(selectedItemId);
+            _utilities_services_FolderService__WEBPACK_IMPORTED_MODULE_5__.FolderService.delete(selectedItemId)
+                .then(() => (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])())
+                .catch((error) => alert(error.message));
         else if (itemType === 'file')
-            _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__.FileService.delete(selectedItemId);
-        (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
+            _utilities_services_FileService__WEBPACK_IMPORTED_MODULE_4__.FileService.delete(selectedItemId)
+                .then(() => (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])())
+                .catch((error) => alert(error.message));
     });
 }
 function toggleRowSelection(row, e) {
@@ -8007,6 +8015,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   Helper: function() { return /* binding */ Helper; }
 /* harmony export */ });
+/* harmony import */ var _models_FileExtension__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../models/FileExtension */ "./src/scripts/models/FileExtension.ts");
+
 const ready = (fn) => {
     if (document.readyState !== 'loading') {
         fn();
@@ -8083,6 +8093,14 @@ class Helper {
         }
         history.pushState({}, '', `?${params.toString()}`);
     }
+    static isValidFileName(name) {
+        if (!name || !name.includes('.'))
+            return false;
+        const ext = Helper.getFileExtension(name);
+        if (!_models_FileExtension__WEBPACK_IMPORTED_MODULE_0__.FILE_EXTENSIONS.includes(ext))
+            return false;
+        return true;
+    }
     static getUniqueName(existingNames, name) {
         let uniqueName = name;
         let counter = 1;
@@ -8143,24 +8161,17 @@ __webpack_require__.r(__webpack_exports__);
 class FileService {
     // avoid using static explorer to prevent data is outdated after some other actions
     // always data get from the storage
-    static isValidFileName(name) {
-        const ext = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getFileExtension(name);
-        if (!_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.includes(ext))
-            return false;
-        return true;
-    }
-    static create(name) {
+    static async create(name) {
         name = name.trim();
         if (!name)
-            return;
-        if (!this.isValidFileName(name)) {
-            alert(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', ')} allowed.`);
-            return;
-        }
+            throw new Error('File name cannot be empty.');
+        if (!_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.isValidFileName(name))
+            throw new Error('File name is not valid. *Supported extensions: ' +
+                _models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', '));
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
         const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
-            return;
+            throw new Error('Current folder not found.');
         const newFile = {
             id: crypto.randomUUID(),
             name: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(currentFolder, name),
@@ -8172,18 +8183,20 @@ class FileService {
         currentFolder.files.push(newFile);
         currentFolder.files.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
+        return newFile;
     }
-    static upload(files) {
+    static async upload(files) {
         if (!files || files.length === 0)
-            return;
+            throw new Error('No files selected');
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
         const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
-            return;
+            throw new Error('Current folder not found');
         const upcomingFiles = [];
+        const notSupportedFiles = [];
         for (const file of files) {
-            if (!this.isValidFileName(file.name)) {
-                alert(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', ')} allowed.`);
+            if (!_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.isValidFileName(file.name)) {
+                notSupportedFiles.push(file.name);
                 continue;
             }
             const fileData = {
@@ -8197,25 +8210,32 @@ class FileService {
             upcomingFiles.push(fileData);
         }
         // prevent redundant save if no valid file to add
-        if (upcomingFiles.length === 0)
-            return;
-        currentFolder.files.push(...upcomingFiles);
-        currentFolder.files.sort((a, b) => a.name.localeCompare(b.name));
-        _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
+        if (upcomingFiles.length > 0) {
+            currentFolder.files.push(...upcomingFiles);
+            currentFolder.files.sort((a, b) => a.name.localeCompare(b.name));
+            _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
+        }
+        if (notSupportedFiles.length > 0) {
+            throw new Error(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', ')} allowed.\n${notSupportedFiles.join(', ')}.`);
+        }
+        return upcomingFiles;
     }
-    static update(id, newName) {
+    static async update(id, newName) {
         newName = newName.trim();
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
         const item = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getItemById(explorer, id);
-        if (!item || !newName || newName === item.name)
-            return;
+        if (!item)
+            throw new Error('File not found.');
+        if (!newName)
+            throw new Error('File name cannot be empty.');
+        if (newName === item.name)
+            return item;
         const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
-            return;
+            throw new Error('Current folder not found.');
         if (newName.includes('.')) {
-            if (!this.isValidFileName(newName)) {
-                alert(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', ')} allowed.`);
-                return;
+            if (!_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.isValidFileName(newName)) {
+                throw new Error(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', ')} allowed.`);
             }
             item.extension = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getFileExtension(newName);
         }
@@ -8227,22 +8247,23 @@ class FileService {
         item.name = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(currentFolder, newName, item.id);
         currentFolder.files.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
+        return item;
     }
-    static delete(id) {
+    static async delete(id) {
         if (!id)
             return;
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
         const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
-            return;
+            throw new Error('Current folder not found.');
         currentFolder.files = currentFolder.files.filter((file) => file.id !== id);
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
-    static view(id) {
+    static async view(id) {
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
         const item = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getItemById(explorer, id);
         if (!item)
-            return;
+            throw new Error('File not found.');
         item.isGlimmer = false;
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
@@ -8268,15 +8289,14 @@ __webpack_require__.r(__webpack_exports__);
 class FolderService {
     // avoid using static explorer to prevent data is outdated after some other actions
     // always data get from the storage
-    static create(name) {
-        if (!name) {
-            alert('Folder name cannot be empty.');
-            return false;
-        }
+    static async create(name) {
+        name = name.trim();
+        if (!name)
+            throw new Error('Folder name cannot be empty.');
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
         const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
-            return;
+            throw new Error('Current folder not found.');
         const newFolder = {
             id: crypto.randomUUID(),
             name: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFolderName(currentFolder, name),
@@ -8289,33 +8309,39 @@ class FolderService {
         currentFolder.subFolders.push(newFolder);
         currentFolder.subFolders.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
+        return newFolder;
     }
-    static update(id, newName) {
+    static async update(id, newName) {
         newName = newName.trim();
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
         const item = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getItemById(explorer, id);
-        if (!item || !newName || newName === item.name)
-            return;
+        if (!item)
+            throw new Error('Folder not found.');
+        if (!newName)
+            throw new Error('Folder name cannot be empty.');
+        if (item.name === newName)
+            return item; // no change
         const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
-            return;
+            throw new Error('Current folder not found.');
         item.name = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFolderName(currentFolder, newName, item.id);
         currentFolder.subFolders.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
+        return item;
     }
-    static delete(id) {
+    static async delete(id) {
         if (!id)
-            return;
+            throw new Error('Invalid folder ID.');
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
         const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
-            return;
+            throw new Error('Current folder not found.');
         currentFolder.subFolders = currentFolder.subFolders.filter((folder) => folder.id !== id);
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }
-    static navigateTo(folderName) {
+    static async navigateTo(folderName) {
         if (!folderName)
-            return;
+            throw new Error('Folder not found.');
         const params = new URLSearchParams(window.location.search);
         let currentPath = params.get('folder');
         const newPath = currentPath
@@ -8323,11 +8349,11 @@ class FolderService {
             : folderName;
         _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.updateFolderPath(newPath);
     }
-    static view(id) {
+    static async view(id) {
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
         const item = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getItemById(explorer, id);
         if (!item)
-            return;
+            throw new Error('Folder not found.');
         item.isGlimmer = false;
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
     }

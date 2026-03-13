@@ -1,3 +1,4 @@
+import { FILE_EXTENSIONS } from '../models/FileExtension';
 import IFile from '../models/IFile';
 import IFolder from '../models/IFolder';
 
@@ -88,6 +89,15 @@ export class Helper {
         }
 
         history.pushState({}, '', `?${params.toString()}`);
+    }
+
+    static isValidFileName(name: string): boolean {
+        if (!name || !name.includes('.')) return false;
+
+        const ext = Helper.getFileExtension(name);
+        if (!FILE_EXTENSIONS.includes(ext)) return false;
+
+        return true;
     }
 
     private static getUniqueName(

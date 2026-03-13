@@ -6,15 +6,16 @@ export class FolderService {
     // avoid using static explorer to prevent data is outdated after some other actions
     // always data get from the storage
 
-    static create(name: string): boolean {
-        if (!name) {
-            alert('Folder name cannot be empty.');
-            return false;
-        }
+    static async create(name: string): Promise<IFolder> {
+        name = name.trim();
+
+        if (!name) throw new Error('Folder name cannot be empty.');
 
         const explorer = StorageService.loadExplorer();
         const currentFolder = Helper.getCurrentFolder(explorer);
-        if (!currentFolder) return;
+
+        if (!currentFolder)
+            throw new Error('Current folder not found.');
 
         const newFolder: IFolder = {
             id: crypto.randomUUID(),
@@ -32,18 +33,26 @@ export class FolderService {
         );
 
         StorageService.saveExplorer(explorer);
+
+        return newFolder;
     }
 
-    static update(id: string, newName: string) {
+    static async update(
+        id: string,
+        newName: string,
+    ): Promise<IFolder> {
         newName = newName.trim();
 
         const explorer = StorageService.loadExplorer();
-        const item = Helper.getItemById(explorer, id);
+        const item = Helper.getItemById(explorer, id) as IFolder;
 
-        if (!item || !newName || newName === item.name) return;
+        if (!item) throw new Error('Folder not found.');
+        if (!newName) throw new Error('Folder name cannot be empty.');
+        if (item.name === newName) return item; // no change
 
         const currentFolder = Helper.getCurrentFolder(explorer);
-        if (!currentFolder) return;
+        if (!currentFolder)
+            throw new Error('Current folder not found.');
 
         item.name = Helper.getUniqueFolderName(
             currentFolder,
@@ -55,14 +64,17 @@ export class FolderService {
             a.name.localeCompare(b.name),
         );
         StorageService.saveExplorer(explorer);
+
+        return item;
     }
 
-    static delete(id: string) {
-        if (!id) return;
+    static async delete(id: string): Promise<void> {
+        if (!id) throw new Error('Invalid folder ID.');
 
         const explorer = StorageService.loadExplorer();
         const currentFolder = Helper.getCurrentFolder(explorer);
-        if (!currentFolder) return;
+        if (!currentFolder)
+            throw new Error('Current folder not found.');
 
         currentFolder.subFolders = currentFolder.subFolders.filter(
             (folder) => folder.id !== id,
@@ -70,8 +82,8 @@ export class FolderService {
         StorageService.saveExplorer(explorer);
     }
 
-    static navigateTo(folderName: string) {
-        if (!folderName) return;
+    static async navigateTo(folderName: string): Promise<void> {
+        if (!folderName) throw new Error('Folder not found.');
 
         const params = new URLSearchParams(window.location.search);
         let currentPath = params.get('folder');
@@ -83,11 +95,11 @@ export class FolderService {
         Helper.updateFolderPath(newPath);
     }
 
-    static view(id: string) {
+    static async view(id: string): Promise<void> {
         const explorer = StorageService.loadExplorer();
         const item = Helper.getItemById(explorer, id);
 
-        if (!item) return;
+        if (!item) throw new Error('Folder not found.');
 
         item.isGlimmer = false;
         StorageService.saveExplorer(explorer);

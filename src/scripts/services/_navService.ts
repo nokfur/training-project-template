@@ -5,18 +5,16 @@ import { FolderService } from '../utilities/services/FolderService';
 
 function handleCreateFolder() {
     const inputModal = new InputModal();
-    inputModal.prompt('Enter item name', (name) => {
-        FolderService.create(name);
-
+    inputModal.prompt('Enter folder name', async (name) => {
+        await FolderService.create(name);
         renderGrid();
     });
 }
 
 function handleCreateFile() {
     const inputModal = new InputModal();
-    inputModal.prompt('Enter item name', (name) => {
-        FileService.create(name);
-
+    inputModal.prompt('Enter file name', async (name) => {
+        await FileService.create(name);
         renderGrid();
     });
 }
@@ -24,11 +22,17 @@ function handleCreateFile() {
 function handleUpload(e: Event) {
     const input = e.target as HTMLInputElement;
 
-    FileService.upload(input.files);
-
-    // reset file input to allow uploading same file again if needed
-    input.value = '';
-    renderGrid();
+    FileService.upload(input.files as FileList)
+        .then(() => {
+            renderGrid();
+        })
+        .catch((error) => {
+            alert(error.message);
+        })
+        .finally(() => {
+            // reset file input to allow uploading same file again if needed
+            input.value = '';
+        });
 }
 
 const bindNavService = () => {

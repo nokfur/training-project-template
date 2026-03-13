@@ -1,5 +1,4 @@
 import { Helper } from '../_helper';
-import IFolder from '../../models/IFolder';
 import { StorageService } from './StorageService';
 import IFile from '../../models/IFile';
 import { FILE_EXTENSIONS } from '../../models/FileExtension';
@@ -8,27 +7,21 @@ export class FileService {
     // avoid using static explorer to prevent data is outdated after some other actions
     // always data get from the storage
 
-    private static isValidFileName(name: string): boolean {
-        const ext = Helper.getFileExtension(name);
-        if (!FILE_EXTENSIONS.includes(ext)) return false;
-        return true;
-    }
-
-    static create(name: string) {
+    static async create(name: string): Promise<IFile> {
         name = name.trim();
 
-        if (!name) return;
-        if (!this.isValidFileName(name)) {
-            alert(
-                `Unsupported file type. Only ${FILE_EXTENSIONS.join(', ')} allowed.`,
+        if (!name) throw new Error('File name cannot be empty.');
+        if (!Helper.isValidFileName(name))
+            throw new Error(
+                'File name is not valid. *Supported extensions: ' +
+                    FILE_EXTENSIONS.join(', '),
             );
-            return;
-        }
 
         const explorer = StorageService.loadExplorer();
         const currentFolder = Helper.getCurrentFolder(explorer);
 
-        if (!currentFolder) return;
+        if (!currentFolder)
+            throw new Error('Current folder not found.');
 
         const newFile: IFile = {
             id: crypto.randomUUID(),
@@ -45,21 +38,26 @@ export class FileService {
         );
 
         StorageService.saveExplorer(explorer);
+
+        return newFile;
     }
 
-    static upload(files: FileList) {
-        if (!files || files.length === 0) return;
+    static async upload(files: FileList): Promise<IFile[]> {
+        if (!files || files.length === 0)
+            throw new Error('No files selected');
 
         const explorer = StorageService.loadExplorer();
         const currentFolder = Helper.getCurrentFolder(explorer);
-        if (!currentFolder) return;
+
+        if (!currentFolder)
+            throw new Error('Current folder not found');
 
         const upcomingFiles: IFile[] = [];
+        const notSupportedFiles: string[] = [];
+
         for (const file of files) {
-            if (!this.isValidFileName(file.name)) {
-                alert(
-                    `Unsupported file type. Only ${FILE_EXTENSIONS.join(', ')} allowed.`,
-                );
+            if (!Helper.isValidFileName(file.name)) {
+                notSupportedFiles.push(file.name);
                 continue;
             }
 
@@ -79,33 +77,43 @@ export class FileService {
         }
 
         // prevent redundant save if no valid file to add
-        if (upcomingFiles.length === 0) return;
+        if (upcomingFiles.length > 0) {
+            currentFolder.files.push(...upcomingFiles);
+            currentFolder.files.sort((a, b) =>
+                a.name.localeCompare(b.name),
+            );
 
-        currentFolder.files.push(...upcomingFiles);
-        currentFolder.files.sort((a, b) =>
-            a.name.localeCompare(b.name),
-        );
+            StorageService.saveExplorer(explorer);
+        }
 
-        StorageService.saveExplorer(explorer);
+        if (notSupportedFiles.length > 0) {
+            throw new Error(
+                `Unsupported file type. Only ${FILE_EXTENSIONS.join(', ')} allowed.\n${notSupportedFiles.join(', ')}.`,
+            );
+        }
+
+        return upcomingFiles;
     }
 
-    static update(id: string, newName: string) {
+    static async update(id: string, newName: string): Promise<IFile> {
         newName = newName.trim();
 
         const explorer = StorageService.loadExplorer();
         const item = Helper.getItemById(explorer, id) as IFile;
 
-        if (!item || !newName || newName === item.name) return;
+        if (!item) throw new Error('File not found.');
+        if (!newName) throw new Error('File name cannot be empty.');
+        if (newName === item.name) return item;
 
         const currentFolder = Helper.getCurrentFolder(explorer);
-        if (!currentFolder) return;
+        if (!currentFolder)
+            throw new Error('Current folder not found.');
 
         if (newName.includes('.')) {
-            if (!this.isValidFileName(newName)) {
-                alert(
+            if (!Helper.isValidFileName(newName)) {
+                throw new Error(
                     `Unsupported file type. Only ${FILE_EXTENSIONS.join(', ')} allowed.`,
                 );
-                return;
             }
 
             item.extension = Helper.getFileExtension(newName);
@@ -125,14 +133,17 @@ export class FileService {
             a.name.localeCompare(b.name),
         );
         StorageService.saveExplorer(explorer);
+
+        return item;
     }
 
-    static delete(id: string) {
+    static async delete(id: string): Promise<void> {
         if (!id) return;
 
         const explorer = StorageService.loadExplorer();
         const currentFolder = Helper.getCurrentFolder(explorer);
-        if (!currentFolder) return;
+        if (!currentFolder)
+            throw new Error('Current folder not found.');
 
         currentFolder.files = currentFolder.files.filter(
             (file) => file.id !== id,
@@ -140,11 +151,11 @@ export class FileService {
         StorageService.saveExplorer(explorer);
     }
 
-    static view(id: string) {
+    static async view(id: string): Promise<void> {
         const explorer = StorageService.loadExplorer();
         const item = Helper.getItemById(explorer, id);
 
-        if (!item) return;
+        if (!item) throw new Error('File not found.');
 
         item.isGlimmer = false;
         StorageService.saveExplorer(explorer);
