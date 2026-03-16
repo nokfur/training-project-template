@@ -36,7 +36,7 @@ function handleUpload(e: Event) {
 }
 
 const bindNavService = () => {
-    const uploadBtn = document.querySelector('#itemUploadBtn');
+    const uploadBtn = document.querySelector('#fileUploadBtn');
     const createFolderBtn = document.querySelector('#newFolderBtn');
     const createFileBtn = document.querySelector('#newFileBtn');
 

@@ -96,7 +96,7 @@ export class Helper {
             params.delete('folder');
         } else {
             // encode path to handle special characters, spaces and unicode
-            params.set('folder', encodeURI(path));
+            params.set('folder', encodeURIComponent(path));
         }
 
         history.pushState({}, '', `?${params.toString()}`);

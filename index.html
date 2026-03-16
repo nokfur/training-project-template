@@ -22,7 +22,7 @@
 
                 <div class="collapse navbar-collapse border-top" id="navbarSupportedContent">
                     <ul class="navbar-nav bg-light py-1">
-                        <li class="nav-item">
+                        <li class="nav-item position-relative">
                             <div class="drop-down">
                                 <button type="button"
                                     class="dropdown-toggle btn px-3 d-flex align-items-center w-100 gap-1 border-0"
@@ -33,7 +33,7 @@
                                     <iconify-icon icon="oui:arrow-down" class="fs-6"></iconify-icon>
                                 </button>
 
-                                <ul class="dropdown-menu m-2">
+                                <ul class="dropdown-menu">
                                     <li>
                                         <button class="dropdown-item d-flex align-items-center gap-2" type="button"
                                             id="newFolderBtn">
@@ -53,14 +53,29 @@
                             </div>
                         </li>
 
-                        <li class="nav-item">
-                            <label for="itemUploadBtn" class="btn px-3 d-flex align-items-center w-100 gap-1 border-0"
-                                aria-label="menu">
-                                <iconify-icon icon="fluent-mdl2:upload" class="fs-5 text-pink"></iconify-icon>
-                                <span>Upload</span>
-                                <iconify-icon icon="oui:arrow-down" class="fs-6"></iconify-icon>
-                            </label>
-                            <input type="file" id="itemUploadBtn" multiple class="d-none" />
+                        <li class="nav-item position-relative">
+                            <div class="drop-down">
+                                <button type="button"
+                                    class="dropdown-toggle btn px-3 d-flex align-items-center w-100 gap-1 border-0"
+                                    aria-label="menu" data-bs-toggle="dropdown">
+                                    <iconify-icon icon="fluent-mdl2:upload" class="fs-5 text-pink"></iconify-icon>
+                                    <span>Upload</span>
+                                    <iconify-icon icon="oui:arrow-down" class="fs-6"></iconify-icon>
+                                </button>
+
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <label for="fileUploadBtn" role="button"
+                                            class="dropdown-item d-flex align-items-center gap-2">
+                                            <iconify-icon icon="streamline-color:new-file-flat"
+                                                class="fs-5"></iconify-icon>
+                                            <span>Upload File</span>
+                                        </label>
+
+                                        <input type="file" id="fileUploadBtn" multiple class="d-none" />
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
 
                         <li class="nav-item ">

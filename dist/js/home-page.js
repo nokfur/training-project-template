@@ -7861,7 +7861,7 @@ function handleUpload(e) {
     });
 }
 const bindNavService = () => {
-    const uploadBtn = document.querySelector('#itemUploadBtn');
+    const uploadBtn = document.querySelector('#fileUploadBtn');
     const createFolderBtn = document.querySelector('#newFolderBtn');
     const createFileBtn = document.querySelector('#newFileBtn');
     uploadBtn?.removeEventListener('change', handleUpload);
@@ -8099,7 +8099,7 @@ class Helper {
         }
         else {
             // encode path to handle special characters, spaces and unicode
-            params.set('folder', encodeURI(path));
+            params.set('folder', encodeURIComponent(path));
         }
         history.pushState({}, '', `?${params.toString()}`);
     }
