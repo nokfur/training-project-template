@@ -1,20 +1,24 @@
 const { Modal } = require('bootstrap');
 
 export abstract class BaseModal {
-    protected element: HTMLElement;
-    private modal: any;
+    protected element: HTMLElement; // the modal element created from the template of the subclass
+    private modal: any; // bootstrap Modal type, have many functions like: show, hide, dispose, etc.
 
     constructor() {
+        // create temporary wrapper and set innerHTML to the template gotten from the subclass
         const wrapper = document.createElement('div');
         wrapper.innerHTML = this.template().trim();
 
+        // element will point to the first child of the wrapper, which is the actual modal element from subclass
         this.element = wrapper.firstElementChild as HTMLElement;
 
+        // append modal to the body DOM
         document.body.insertAdjacentElement(
             'beforeend',
             this.element,
         );
 
+        // create bootstrap modal instance with the modal element
         this.modal = new Modal(this.element);
 
         // Remove modal from DOM after it closes

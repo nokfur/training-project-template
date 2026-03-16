@@ -12,7 +12,7 @@ const bindBreadCrumbService = () => {
         if (!button) return;
 
         const folderPath = button.dataset.folderPath;
-        Helper.updateFolderPath(folderPath);
+        Helper.updateFolderUrlPath(folderPath);
         renderGrid();
     });
 };

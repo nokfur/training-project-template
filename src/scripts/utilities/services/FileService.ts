@@ -11,7 +11,7 @@ export class FileService {
         name = name.trim();
 
         if (!name) throw new Error('File name cannot be empty.');
-        if (!Helper.isValidFileName(name))
+        if (!Helper.isValidFileExtension(name))
             throw new Error(
                 'File name is not valid. *Supported extensions: ' +
                     FILE_EXTENSIONS.join(', '),
@@ -56,7 +56,7 @@ export class FileService {
         const notSupportedFiles: string[] = [];
 
         for (const file of files) {
-            if (!Helper.isValidFileName(file.name)) {
+            if (!Helper.isValidFileExtension(file.name)) {
                 notSupportedFiles.push(file.name);
                 continue;
             }
@@ -76,6 +76,13 @@ export class FileService {
             upcomingFiles.push(fileData);
         }
 
+        // prevent all upload if there is any unsupported file to avoid confusion of partial upload
+        if (notSupportedFiles.length > 0) {
+            throw new Error(
+                `Unsupported file type. Only ${FILE_EXTENSIONS.join(', ')} allowed.\n${notSupportedFiles.join(', ')}.`,
+            );
+        }
+
         // prevent redundant save if no valid file to add
         if (upcomingFiles.length > 0) {
             currentFolder.files.push(...upcomingFiles);
@@ -84,12 +91,6 @@ export class FileService {
             );
 
             StorageService.saveExplorer(explorer);
-        }
-
-        if (notSupportedFiles.length > 0) {
-            throw new Error(
-                `Unsupported file type. Only ${FILE_EXTENSIONS.join(', ')} allowed.\n${notSupportedFiles.join(', ')}.`,
-            );
         }
 
         return upcomingFiles;
@@ -109,8 +110,9 @@ export class FileService {
         if (!currentFolder)
             throw new Error('Current folder not found.');
 
+        // validate file extension if user input new name with extension
         if (newName.includes('.')) {
-            if (!Helper.isValidFileName(newName)) {
+            if (!Helper.isValidFileExtension(newName)) {
                 throw new Error(
                     `Unsupported file type. Only ${FILE_EXTENSIONS.join(', ')} allowed.`,
                 );

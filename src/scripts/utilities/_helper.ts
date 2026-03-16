@@ -78,7 +78,18 @@ export class Helper {
         return currentFolder;
     }
 
-    static updateFolderPath(path?: string) {
+    static updateFolderPath(folderName: string) {
+        const params = new URLSearchParams(window.location.search);
+        let currentPath = params.get('folder');
+
+        const newPath = currentPath
+            ? `${currentPath}/${folderName}`
+            : folderName;
+
+        return newPath;
+    }
+
+    static updateFolderUrlPath(path?: string) {
         const params = new URLSearchParams(window.location.search);
 
         if (!path) {
@@ -91,7 +102,7 @@ export class Helper {
         history.pushState({}, '', `?${params.toString()}`);
     }
 
-    static isValidFileName(name: string): boolean {
+    static isValidFileExtension(name: string): boolean {
         if (!name || !name.includes('.')) return false;
 
         const ext = Helper.getFileExtension(name);

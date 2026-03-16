@@ -7593,10 +7593,14 @@ __webpack_require__.r(__webpack_exports__);
 const { Modal } = __webpack_require__(/*! bootstrap */ "./node_modules/bootstrap/dist/js/bootstrap.esm.js");
 class BaseModal {
     constructor() {
+        // create temporary wrapper and set innerHTML to the template gotten from the subclass
         const wrapper = document.createElement('div');
         wrapper.innerHTML = this.template().trim();
+        // element will point to the first child of the wrapper, which is the actual modal element from subclass
         this.element = wrapper.firstElementChild;
+        // append modal to the body DOM
         document.body.insertAdjacentElement('beforeend', this.element);
+        // create bootstrap modal instance with the modal element
         this.modal = new Modal(this.element);
         // Remove modal from DOM after it closes
         this.element.addEventListener('hidden.bs.modal', () => {
@@ -7804,7 +7808,7 @@ const bindBreadCrumbService = () => {
         if (!button)
             return;
         const folderPath = button.dataset.folderPath;
-        _utilities_helper__WEBPACK_IMPORTED_MODULE_1__.Helper.updateFolderPath(folderPath);
+        _utilities_helper__WEBPACK_IMPORTED_MODULE_1__.Helper.updateFolderUrlPath(folderPath);
         (0,_components_grid__WEBPACK_IMPORTED_MODULE_0__["default"])();
     });
 };
@@ -8080,7 +8084,15 @@ class Helper {
         }
         return currentFolder;
     }
-    static updateFolderPath(path) {
+    static updateFolderPath(folderName) {
+        const params = new URLSearchParams(window.location.search);
+        let currentPath = params.get('folder');
+        const newPath = currentPath
+            ? `${currentPath}/${folderName}`
+            : folderName;
+        return newPath;
+    }
+    static updateFolderUrlPath(path) {
         const params = new URLSearchParams(window.location.search);
         if (!path) {
             params.delete('folder');
@@ -8091,7 +8103,7 @@ class Helper {
         }
         history.pushState({}, '', `?${params.toString()}`);
     }
-    static isValidFileName(name) {
+    static isValidFileExtension(name) {
         if (!name || !name.includes('.'))
             return false;
         const ext = Helper.getFileExtension(name);
@@ -8163,7 +8175,7 @@ class FileService {
         name = name.trim();
         if (!name)
             throw new Error('File name cannot be empty.');
-        if (!_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.isValidFileName(name))
+        if (!_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.isValidFileExtension(name))
             throw new Error('File name is not valid. *Supported extensions: ' +
                 _models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', '));
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();
@@ -8193,7 +8205,7 @@ class FileService {
         const upcomingFiles = [];
         const notSupportedFiles = [];
         for (const file of files) {
-            if (!_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.isValidFileName(file.name)) {
+            if (!_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.isValidFileExtension(file.name)) {
                 notSupportedFiles.push(file.name);
                 continue;
             }
@@ -8207,14 +8219,15 @@ class FileService {
             };
             upcomingFiles.push(fileData);
         }
+        // prevent all upload if there is any unsupported file to avoid confusion of partial upload
+        if (notSupportedFiles.length > 0) {
+            throw new Error(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', ')} allowed.\n${notSupportedFiles.join(', ')}.`);
+        }
         // prevent redundant save if no valid file to add
         if (upcomingFiles.length > 0) {
             currentFolder.files.push(...upcomingFiles);
             currentFolder.files.sort((a, b) => a.name.localeCompare(b.name));
             _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
-        }
-        if (notSupportedFiles.length > 0) {
-            throw new Error(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', ')} allowed.\n${notSupportedFiles.join(', ')}.`);
         }
         return upcomingFiles;
     }
@@ -8231,8 +8244,9 @@ class FileService {
         const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
             throw new Error('Current folder not found.');
+        // validate file extension if user input new name with extension
         if (newName.includes('.')) {
-            if (!_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.isValidFileName(newName)) {
+            if (!_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.isValidFileExtension(newName)) {
                 throw new Error(`Unsupported file type. Only ${_models_FileExtension__WEBPACK_IMPORTED_MODULE_2__.FILE_EXTENSIONS.join(', ')} allowed.`);
             }
             item.extension = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getFileExtension(newName);
@@ -8340,12 +8354,8 @@ class FolderService {
     static async navigateTo(folderName) {
         if (!folderName)
             throw new Error('Folder not found.');
-        const params = new URLSearchParams(window.location.search);
-        let currentPath = params.get('folder');
-        const newPath = currentPath
-            ? `${currentPath}/${folderName}`
-            : folderName;
-        _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.updateFolderPath(newPath);
+        const newPath = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.updateFolderPath(folderName);
+        _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.updateFolderUrlPath(newPath);
     }
     static async view(id) {
         const explorer = _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.loadExplorer();

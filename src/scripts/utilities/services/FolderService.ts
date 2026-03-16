@@ -85,14 +85,8 @@ export class FolderService {
     static async navigateTo(folderName: string): Promise<void> {
         if (!folderName) throw new Error('Folder not found.');
 
-        const params = new URLSearchParams(window.location.search);
-        let currentPath = params.get('folder');
-
-        const newPath = currentPath
-            ? `${currentPath}/${folderName}`
-            : folderName;
-
-        Helper.updateFolderPath(newPath);
+        const newPath = Helper.updateFolderPath(folderName);
+        Helper.updateFolderUrlPath(newPath);
     }
 
     static async view(id: string): Promise<void> {
