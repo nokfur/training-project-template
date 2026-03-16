@@ -7515,7 +7515,7 @@ function renderRow(data, type) {
                     ${renderItemName(data, type)}
                 </td>
                 <td data-label="Modified" class="text-secondary align-middle">
-                    ${_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.formatDate(data.modified)}
+                    ${_utilities_helper__WEBPACK_IMPORTED_MODULE_0__.Helper.formatDate(data.modifiedAt)}
                 </td>
                 <td data-label="Modified By" class="text-secondary align-middle">
                     ${data.modifiedBy}
@@ -8186,7 +8186,8 @@ class FileService {
             id: crypto.randomUUID(),
             name: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(currentFolder, name),
             extension: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getFileExtension(name),
-            modified: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            modifiedAt: new Date().toISOString(),
             modifiedBy: 'Administrator MOD',
             isGlimmer: true,
         };
@@ -8213,7 +8214,8 @@ class FileService {
                 id: crypto.randomUUID(),
                 name: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(currentFolder, file.name),
                 extension: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getFileExtension(file.name),
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 isGlimmer: true,
             };
@@ -8256,6 +8258,7 @@ class FileService {
             newName = `${newName}.txt`;
             item.extension = 'txt';
         }
+        item.modifiedAt = new Date().toISOString();
         item.name = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFileName(currentFolder, newName, item.id);
         currentFolder.files.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
@@ -8312,7 +8315,8 @@ class FolderService {
         const newFolder = {
             id: crypto.randomUUID(),
             name: _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFolderName(currentFolder, name),
-            modified: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            modifiedAt: new Date().toISOString(),
             modifiedBy: 'Administrator MOD',
             files: [],
             subFolders: [],
@@ -8336,6 +8340,7 @@ class FolderService {
         const currentFolder = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getCurrentFolder(explorer);
         if (!currentFolder)
             throw new Error('Current folder not found.');
+        item.modifiedAt = new Date().toISOString();
         item.name = _helper__WEBPACK_IMPORTED_MODULE_0__.Helper.getUniqueFolderName(currentFolder, newName, item.id);
         currentFolder.subFolders.sort((a, b) => a.name.localeCompare(b.name));
         _StorageService__WEBPACK_IMPORTED_MODULE_1__.StorageService.saveExplorer(explorer);
@@ -8386,7 +8391,8 @@ class StorageService {
             {
                 id: crypto.randomUUID(),
                 name: 'CoasterAndBargeLoading.xlsx',
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
                 isGlimmer: true,
@@ -8394,7 +8400,8 @@ class StorageService {
             {
                 id: crypto.randomUUID(),
                 name: 'RevenueByServices.xlsx',
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
                 isGlimmer: true,
@@ -8402,7 +8409,8 @@ class StorageService {
             {
                 id: crypto.randomUUID(),
                 name: 'RevenueByServices2016.xlsx',
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
                 isGlimmer: true,
@@ -8410,7 +8418,8 @@ class StorageService {
             {
                 id: crypto.randomUUID(),
                 name: 'RevenueByServices2017.xlsx',
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
                 isGlimmer: true,
@@ -8422,7 +8431,8 @@ class StorageService {
             {
                 id: crypto.randomUUID(),
                 name: 'CAS',
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Megan Bowen',
                 files: [],
                 subFolders: [],
@@ -8434,7 +8444,8 @@ class StorageService {
         const root = {
             id: crypto.randomUUID(),
             name: 'Root',
-            modified: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            modifiedAt: new Date().toISOString(),
             modifiedBy: 'System',
             files: this.mockFileData(),
             subFolders: this.mockFolderData(),

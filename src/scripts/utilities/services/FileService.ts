@@ -27,7 +27,8 @@ export class FileService {
             id: crypto.randomUUID(),
             name: Helper.getUniqueFileName(currentFolder, name),
             extension: Helper.getFileExtension(name),
-            modified: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            modifiedAt: new Date().toISOString(),
             modifiedBy: 'Administrator MOD',
             isGlimmer: true,
         };
@@ -68,7 +69,8 @@ export class FileService {
                     file.name,
                 ),
                 extension: Helper.getFileExtension(file.name),
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 isGlimmer: true,
             };
@@ -124,6 +126,8 @@ export class FileService {
             newName = `${newName}.txt`;
             item.extension = 'txt';
         }
+
+        item.modifiedAt = new Date().toISOString();
 
         item.name = Helper.getUniqueFileName(
             currentFolder,

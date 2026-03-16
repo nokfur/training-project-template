@@ -20,7 +20,8 @@ export class FolderService {
         const newFolder: IFolder = {
             id: crypto.randomUUID(),
             name: Helper.getUniqueFolderName(currentFolder, name),
-            modified: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            modifiedAt: new Date().toISOString(),
             modifiedBy: 'Administrator MOD',
             files: [],
             subFolders: [],
@@ -53,6 +54,8 @@ export class FolderService {
         const currentFolder = Helper.getCurrentFolder(explorer);
         if (!currentFolder)
             throw new Error('Current folder not found.');
+
+        item.modifiedAt = new Date().toISOString();
 
         item.name = Helper.getUniqueFolderName(
             currentFolder,

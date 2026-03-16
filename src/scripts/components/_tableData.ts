@@ -57,7 +57,7 @@ function renderRow(
                     ${renderItemName(data, type)}
                 </td>
                 <td data-label="Modified" class="text-secondary align-middle">
-                    ${Helper.formatDate(data.modified)}
+                    ${Helper.formatDate(data.modifiedAt)}
                 </td>
                 <td data-label="Modified By" class="text-secondary align-middle">
                     ${data.modifiedBy}

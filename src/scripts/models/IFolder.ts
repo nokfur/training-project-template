@@ -5,7 +5,8 @@ export default interface IFolder {
     name: string;
     files: IFile[];
     subFolders: IFolder[];
-    modified: string;
+    createdAt: string;
+    modifiedAt: string;
     modifiedBy: string;
     isGlimmer: boolean;
 }

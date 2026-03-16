@@ -10,7 +10,8 @@ export class StorageService {
             {
                 id: crypto.randomUUID(),
                 name: 'CoasterAndBargeLoading.xlsx',
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
                 isGlimmer: true,
@@ -18,7 +19,8 @@ export class StorageService {
             {
                 id: crypto.randomUUID(),
                 name: 'RevenueByServices.xlsx',
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
                 isGlimmer: true,
@@ -26,7 +28,8 @@ export class StorageService {
             {
                 id: crypto.randomUUID(),
                 name: 'RevenueByServices2016.xlsx',
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
                 isGlimmer: true,
@@ -34,7 +37,8 @@ export class StorageService {
             {
                 id: crypto.randomUUID(),
                 name: 'RevenueByServices2017.xlsx',
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Administrator MOD',
                 extension: 'xlsx',
                 isGlimmer: true,
@@ -47,7 +51,8 @@ export class StorageService {
             {
                 id: crypto.randomUUID(),
                 name: 'CAS',
-                modified: new Date().toISOString(),
+                createdAt: new Date().toISOString(),
+                modifiedAt: new Date().toISOString(),
                 modifiedBy: 'Megan Bowen',
                 files: [],
                 subFolders: [],
@@ -60,7 +65,8 @@ export class StorageService {
         const root: IFolder = {
             id: crypto.randomUUID(),
             name: 'Root',
-            modified: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            modifiedAt: new Date().toISOString(),
             modifiedBy: 'System',
             files: this.mockFileData(),
             subFolders: this.mockFolderData(),
